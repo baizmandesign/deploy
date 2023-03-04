@@ -52,15 +52,6 @@ PCE_PATH_LOCAL = ~/www/pce.test
 826_THEME_PATH = yetti
 826_PATH_LOCAL = ~/www/826boston.test
 
-# baizman design (dreamhost)
-BZMN_PLUGIN_PATH = baizmandesign.com-plugin
-BZMN_THEME_PATH = baizmandesign.com-theme
-
-# personal site (dreamhost)
-SB_PLUGIN_PATH = saulbaizman.com-plugin
-SB_THEME_PATH = saulbaizman.com-theme
-
-
 BDSL_PLUGIN_PATH = baizman-design-standard-library
 BDSL_PATH_LOCAL = ~/www/bd.test
 
@@ -214,12 +205,12 @@ bzmn-dreamhost-bdsl-baizmandesign.com:
 	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
 
 bzmn-dreamhost-plugin-baizmandesign.com:
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:bzmn-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${BZMN_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${BZMN_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:bzmn-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH}
 	
 bzmn-dreamhost-theme-baizmandesign.com:
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:bzmn-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${BZMN_THEME_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${BZMN_THEME_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:bzmn-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} ${GIT_BRANCH}
 
 saulbaizman.com: sb-dreamhost-bdsl-saulbaizman.com sb-dreamhost-plugin-saulbaizman.com sb-dreamhost-theme-saulbaizman.com
 	true
@@ -229,13 +220,13 @@ sb-dreamhost-bdsl-saulbaizman.com:
 	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
 
 sb-dreamhost-plugin-saulbaizman.com:
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:sb-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${SB_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${SB_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:sb-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
 sb-dreamhost-theme-saulbaizman.com:
 	# note: the branch is neither master nor production 
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:sb-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${SB_THEME_PATH} pull ${GIT_REMOTE} feature/typeface
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${SB_THEME_PATH} pull ${GIT_REMOTE} feature/typeface
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:sb-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} feature/typeface
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} feature/typeface
 
 ane: ane.massart.edu
 	true
@@ -246,7 +237,7 @@ ane.massart.edu:
 sowa: sowa.massart.edu
 	true
 
-sowa.massart.edu
+sowa.massart.edu:
 	true
 
 flywheel: pce 826b
