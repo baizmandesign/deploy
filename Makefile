@@ -2,6 +2,9 @@
 # it requires ssh public-key authentication on the ssh remote hosts.
 
 # FIXME: i can simplify this by using name substitution and target names to pass "variables" in the parts of the target.
+# i could also renamed the plugins and themes to have standard names:
+# website.org-plugin
+# website.org-theme
 
 SHELL = /bin/sh
 SCP = /usr/bin/scp
@@ -89,7 +92,7 @@ usage:
 	
 all: lta 826b pce bzmn
 
-bdsl: lta-dreamhost-bdsl-beagefriendly.org lta-dreamhost-bdsl-creativeagingportal.org lta-dreamhost-bdsl-creativeagingresource.org lta-dreamhost-bdsl-nyccreativeaginginitiative.org lta-bluehost-bdsl-lifetimearts.org lta-bluehost-bdsl-creativeagingtoolkit.org
+bdsl: lta-dreamhost-bdsl-beagefriendly.org lta-dreamhost-bdsl-creativeagingportal.org lta-dreamhost-bdsl-creativeagingresource.org lta-dreamhost-bdsl-nyccreativeaginginitiative.org lta-bluehost-bdsl-lifetimearts.org lta-bluehost-bdsl-creativeagingtoolkit.org pce-flywheel-bdsl-pce.massart.edu 826-flywheel-bdsl-826boston.org bzmn-dreamhost-bdsl-baizmandesign.com sb-dreamhost-bdsl-saulbaizman.com
 
 lta: beagefriendly.org creativeagingresource.org creativeagingportal.org nyccreativeaginginitiative.org lifetimearts.org creativeagingtoolkit.org
 
