@@ -53,12 +53,12 @@ PCE_PATH_LOCAL = ~/www/pce.test
 826_PATH_LOCAL = ~/www/826boston.test
 
 # baizman design (dreamhost)
-BZMN_PLUGIN_PATH = baizmandesign-plugin
-BZMN_THEME_PATH = infinity-pro
+BZMN_PLUGIN_PATH = baizmandesign.com-plugin
+BZMN_THEME_PATH = baizmandesign.com-theme
 
 # personal site (dreamhost)
-SB_PLUGIN_PATH = srb-plugin
-SB_THEME_PATH = authority-pro
+SB_PLUGIN_PATH = saulbaizman.com-plugin
+SB_THEME_PATH = saulbaizman.com-theme
 
 
 BDSL_PLUGIN_PATH = baizman-design-standard-library
