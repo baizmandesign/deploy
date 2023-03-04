@@ -1,0 +1,10 @@
+.git
+.phpdoc
+vendor
+.idea
+.DS_Store
+notes.txt
+.gitignore
+composer.json
+composer.lock
+composer.phar
