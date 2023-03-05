@@ -204,13 +204,12 @@ bzmn-dreamhost-bdsl-baizmandesign.com:
 	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:bzmn-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
 	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
 
-bzmn-dreamhost-plugin-baizmandesign.com:
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:bzmn-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH}
+# https://stackoverflow.com/questions/34888725/setting-makefile-variable-to-result-of-command-in-rule
+bzmn-dreamhost-%-baizmandesign.com:
+	${eval domain = ${subst theme-,,${subst plugin-,,${patsubst bzmn-dreamhost-%,%,$@}}}}
 	
-bzmn-dreamhost-theme-baizmandesign.com:
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:bzmn-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:bzmn-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${@:bzmn-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${domain}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${domain}-${@:bzmn-dreamhost-%-baizmandesign.com=%} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${domain}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${domain}-${@:bzmn-dreamhost-%-baizmandesign.com=%} pull ${GIT_REMOTE} ${GIT_BRANCH}
 
 saulbaizman.com: sb-dreamhost-bdsl-saulbaizman.com sb-dreamhost-plugin-saulbaizman.com sb-dreamhost-theme-saulbaizman.com
 	true
@@ -219,14 +218,12 @@ sb-dreamhost-bdsl-saulbaizman.com:
 	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:sb-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
 	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
 
-sb-dreamhost-plugin-saulbaizman.com:
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:sb-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-plugin-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-plugin-%=%}-plugin pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
-
-sb-dreamhost-theme-saulbaizman.com:
-	# note: the branch is neither master nor production 
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${@:sb-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} feature/typeface
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${@:sb-dreamhost-theme-%=%}/${WP_CONTENT_DIR}/${@:sb-dreamhost-%-saulbaizman.com=%}s/${@:sb-dreamhost-theme-%=%}-theme pull ${GIT_REMOTE} feature/typeface
+sb-dreamhost-%-saulbaizman.com:
+	${eval domain = ${subst theme-,,${subst plugin-,,${patsubst sb-dreamhost-%,%,$@}}}}
+	${eval subdir = ${@:sb-dreamhost-%-saulbaizman.com=%}s}
+	${eval suffix = ${@:sb-dreamhost-%-saulbaizman.com=%}}
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${domain}/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${domain}/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH}
 
 ane: ane.massart.edu
 	true
