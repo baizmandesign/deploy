@@ -207,9 +207,11 @@ bzmn-dreamhost-bdsl-baizmandesign.com:
 # https://stackoverflow.com/questions/34888725/setting-makefile-variable-to-result-of-command-in-rule
 bzmn-dreamhost-%-baizmandesign.com:
 	${eval domain = ${subst theme-,,${subst plugin-,,${patsubst bzmn-dreamhost-%,%,$@}}}}
-	
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${domain}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${domain}-${@:bzmn-dreamhost-%-baizmandesign.com=%} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${domain}/${WP_CONTENT_DIR}/${@:bzmn-dreamhost-%-baizmandesign.com=%}s/${domain}-${@:bzmn-dreamhost-%-baizmandesign.com=%} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${eval suffix = ${@:bzmn-dreamhost-%-baizmandesign.com=%}}
+	${eval subdir = ${suffix}s}
+	for site in ${domain} dev.${domain} ; do \
+${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C $$site/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH} ; \
+done
 
 saulbaizman.com: sb-dreamhost-bdsl-saulbaizman.com sb-dreamhost-plugin-saulbaizman.com sb-dreamhost-theme-saulbaizman.com
 	true
@@ -220,10 +222,12 @@ sb-dreamhost-bdsl-saulbaizman.com:
 
 sb-dreamhost-%-saulbaizman.com:
 	${eval domain = ${subst theme-,,${subst plugin-,,${patsubst sb-dreamhost-%,%,$@}}}}
-	${eval subdir = ${@:sb-dreamhost-%-saulbaizman.com=%}s}
 	${eval suffix = ${@:sb-dreamhost-%-saulbaizman.com=%}}
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C ${domain}/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C dev.${domain}/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${eval subdir = ${suffix}s}
+	for site in ${domain} dev.${domain} ; do \
+${SSH} ${SB_DREAMHOST_SSH_HOST} ${LOCAL_GIT} -C $$site/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH} ; \
+done
+	
 
 ane: ane.massart.edu
 	true
