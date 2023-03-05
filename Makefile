@@ -15,7 +15,6 @@ RSYNC = /usr/bin/rsync
 GIT_COMMAND = pull
 GIT_REMOTE = origin
 GIT_BRANCH = production
-GIT_BRANCH_OLD = master
 # https://stackoverflow.com/questions/2004760/get-makefile-directory
 makeFileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 EXCLUDE = ${makeFileDir}excluded.txt
@@ -113,36 +112,37 @@ lta-dreamhost-plugin-beagefriendly.org:
 	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${BAF_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-plugin-creativeagingresource.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAR_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAR_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-plugin-creativeagingportal.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAP_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAP_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-plugin-nyccreativeaginginitiative.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${NYCCAI_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${NYCCAI_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-theme-beagefriendly.org:
 	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${BAF_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-theme-creativeagingresource.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAR_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAR_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-theme-creativeagingportal.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAP_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAP_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-theme-nyccreativeaginginitiative.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${NYCCAI_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${NYCCAI_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 # for bluehost, it doesn't recognize the ${REMOTE_GIT_ARG} argument for git, so we cd into the directory.
 lta-bluehost-plugin-lifetimearts.org:
 	#${RSYNC} -a --verbose --progress --rsh=ssh ${LTA_PATH_LOCAL}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH}/ ${LTA_BLUEHOST_SSH_HOST}:${@:lta-bluehost-plugin-%=%}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH}/
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-plugin-%=%}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-plugin-%=%}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 	
 lta-bluehost-theme-lifetimearts.org:
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${LTA_THEME_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${LTA_THEME_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-bluehost-theme-creativeagingtoolkit.org:
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${CAT_THEME_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${CAT_THEME_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd staging.${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${CAT_THEME_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 	
 	
 #lta-dreamhost-plugin-%:
