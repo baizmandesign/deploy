@@ -9,8 +9,10 @@
 SHELL = /bin/sh
 SSH = /usr/bin/ssh
 REMOTE_GIT = git
+REMOTE_GIT_ARG = -C
 ECHO = /bin/echo
 RSYNC = /usr/bin/rsync
+GIT_COMMAND = pull
 GIT_REMOTE = origin
 GIT_BRANCH = production
 GIT_BRANCH_OLD = master
@@ -97,50 +99,50 @@ lifetimearts.org: lta-bluehost-bdsl-lifetimearts.org lta-bluehost-plugin-lifetim
 creativeagingtoolkit.org: lta-bluehost-bdsl-creativeagingtoolkit.org lta-bluehost-theme-creativeagingtoolkit.org
 
 lta-dreamhost-bdsl-%: 
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C dev.${@:lta-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C staging.${@:lta-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} dev.${@:lta-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} staging.${@:lta-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
-# for bluehost, it doesn't recognize the -C argument for git, so we cd into the directory.
+# for bluehost, it doesn't recognize the ${REMOTE_GIT_ARG} argument for git, so we cd into the directory.
 lta-bluehost-bdsl-%:
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} \&\& ${REMOTE_GIT} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd dev.${@:lta-bluehost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} \&\& ${REMOTE_GIT} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd staging.${@:lta-bluehost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} \&\& ${REMOTE_GIT} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd dev.${@:lta-bluehost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd staging.${@:lta-bluehost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-plugin-beagefriendly.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${BAF_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${BAF_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-plugin-creativeagingresource.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAR_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAR_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
 lta-dreamhost-plugin-creativeagingportal.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAP_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${CAP_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
 lta-dreamhost-plugin-nyccreativeaginginitiative.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${NYCCAI_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-plugin-%=%}/${WP_PLUGINS_DIR}/${NYCCAI_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
 lta-dreamhost-theme-beagefriendly.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${BAF_THEME_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${BAF_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 lta-dreamhost-theme-creativeagingresource.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAR_THEME_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAR_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
 lta-dreamhost-theme-creativeagingportal.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAP_THEME_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${CAP_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
 lta-dreamhost-theme-nyccreativeaginginitiative.org:
-	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${NYCCAI_THEME_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:lta-dreamhost-theme-%=%}/${WP_THEMES_DIR}/${NYCCAI_THEME_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
-# for bluehost, it doesn't recognize the -C argument for git, so we cd into the directory.
+# for bluehost, it doesn't recognize the ${REMOTE_GIT_ARG} argument for git, so we cd into the directory.
 lta-bluehost-plugin-lifetimearts.org:
 	#${RSYNC} -a --verbose --progress --rsh=ssh ${LTA_PATH_LOCAL}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH}/ ${LTA_BLUEHOST_SSH_HOST}:${@:lta-bluehost-plugin-%=%}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH}/
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-plugin-%=%}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH} \&\& ${REMOTE_GIT} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-plugin-%=%}/${WP_PLUGINS_DIR}/${LTA_PLUGIN_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 	
 lta-bluehost-theme-lifetimearts.org:
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${LTA_THEME_PATH} \&\& ${REMOTE_GIT} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${LTA_THEME_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 
 lta-bluehost-theme-creativeagingtoolkit.org:
-	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${CAT_THEME_PATH} \&\& ${REMOTE_GIT} pull ${GIT_REMOTE} ${GIT_BRANCH_OLD}
+	${SSH} ${LTA_BLUEHOST_SSH_HOST} cd ${@:lta-bluehost-theme-%=%}/${WP_THEMES_DIR}/${CAT_THEME_PATH} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH_OLD}
 	
 	
 #lta-dreamhost-plugin-%:
@@ -180,8 +182,8 @@ bzmn: baizmandesign.com saulbaizman.com
 baizmandesign.com: bzmn-dreamhost-bdsl-baizmandesign.com bzmn-dreamhost-plugin-baizmandesign.com bzmn-dreamhost-theme-baizmandesign.com
 
 bzmn-dreamhost-bdsl-baizmandesign.com:
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:bzmn-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C dev.${@:bzmn-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:bzmn-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} dev.${@:bzmn-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 # https://stackoverflow.com/questions/34888725/setting-makefile-variable-to-result-of-command-in-rule
 bzmn-dreamhost-%-baizmandesign.com:
@@ -189,21 +191,21 @@ bzmn-dreamhost-%-baizmandesign.com:
 	${eval suffix = ${@:bzmn-dreamhost-%-baizmandesign.com=%}}
 	${eval subdir = ${suffix}s}
 	for site in ${domain} dev.${domain} ; do \
-${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C $$site/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH} ; \
+${SSH} ${BZMN_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} $$site/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
 done
 
 saulbaizman.com: sb-dreamhost-bdsl-saulbaizman.com sb-dreamhost-plugin-saulbaizman.com sb-dreamhost-theme-saulbaizman.com
 
 sb-dreamhost-bdsl-saulbaizman.com:
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C ${@:sb-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
-	${SSH} ${SB_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C dev.${@:sb-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} pull ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${@:sb-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+	${SSH} ${SB_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} dev.${@:sb-dreamhost-bdsl-%=%}/${WP_PLUGINS_DIR}/${BDSL_PLUGIN_PATH} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 
 sb-dreamhost-%-saulbaizman.com:
 	${eval domain = ${subst theme-,,${subst plugin-,,${patsubst sb-dreamhost-%,%,$@}}}}
 	${eval suffix = ${@:sb-dreamhost-%-saulbaizman.com=%}}
 	${eval subdir = ${suffix}s}
 	for site in ${domain} dev.${domain} ; do \
-${SSH} ${SB_DREAMHOST_SSH_HOST} ${REMOTE_GIT} -C $$site/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} pull ${GIT_REMOTE} ${GIT_BRANCH} ; \
+${SSH} ${SB_DREAMHOST_SSH_HOST} ${REMOTE_GIT} ${REMOTE_GIT_ARG} $$site/${WP_CONTENT_DIR}/${subdir}/${domain}-${suffix} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
 done
 
 
