@@ -57,19 +57,10 @@ WP_CONTENT_DIR = wp-content
 WP_PLUGINS_DIR = ${WP_CONTENT_DIR}/plugins
 WP_THEMES_DIR = ${WP_CONTENT_DIR}/themes
 
-# some can use git -C
-
-# some have to use scp (or rsync?)
-
-# one makefile for all projects?
-# one makefile for each repo?
-# one makefile for each website?
-
 # precede command with "-" to continue even upon encountering an error
 # precede a command with "@" to silence output
 
-# use patterns?
-
+# first target is default target.
 usage:
 	@ ${ECHO} 
 	@ ${ECHO} No target specified.
