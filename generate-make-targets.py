@@ -52,15 +52,11 @@ def print_targets ( website_list ):
 			if site['function'] == 'rsync' and dependency['path'] == BDSL_PLUGIN_PATH:
 				site['remote_folder'] = '$(BDSL_PATH_LOCAL)'
 			dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], site['remote_folder'], dependency['type'], dependency['path'], SUBDOMAIN_SEPARATOR.join(site['subdomains']), site['function'] ] )
-#				dependency_target = PART_SEPARATOR.join ( [ site['remote_host'],  '$(LOCAL_PATH_PREFIX)/' + site['remote_folder'], dependency['type'], dependency['path'], SUBDOMAIN_SEPARATOR.join(site['subdomains']), site['function'] ] )
 		
 			dependencies.append ( dependency_target )
 				
 			if dependency['path'] == BDSL_PLUGIN_PATH:
-				if site['function'] == 'git':
-					bdsl_websites.append ( dependency_target )
-				if site['function'] == 'rsync':
-					pass
+				bdsl_websites.append ( dependency_target )
 					
 
 		print('{domain}: {target}'.format ( domain = site['domain'], target = DEPENDENCY_SEPARATOR.join ( dependencies ) ))

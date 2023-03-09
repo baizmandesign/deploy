@@ -22,8 +22,6 @@ GENERATE_MAKE_TARGETS_PY = generate-make-targets.py
 TARGETS_FILE = targets.makefile
 COMMA := ,
 
-# add make rule to generate included file
-
 
 # flywheel stuff
 LOCAL_PATH_PREFIX = ~/www
@@ -46,11 +44,11 @@ WP_THEMES_DIR = themes
 # if it were called outside a for loop, it would not need those characters. plus, other make conventions would work (like pre-pending an @ symbol).
 # FIXME: I changed the order of arguments, but not the function calls.
 # NOTE: this is deprecated, since the other function works for older and newer versions of git.
-define remote_git
-	echo executing remote_git... ; \
-	echo ${SSH} ${1} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${2}/${WP_CONTENT_DIR}/${3}/${4} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
-	echo
-endef
+##define remote_git
+##	echo executing remote_git... ; \
+##	echo ${SSH} ${1} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${2}/${WP_CONTENT_DIR}/${3}/${4} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
+##	echo
+##endef
 
 
 # $1 = remote ssh host
@@ -61,7 +59,7 @@ endef
 define local_cd_git
 	echo executing local_cd_git... ; \
 	echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
-	echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
+	${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
 	echo
 endef
 
@@ -168,7 +166,7 @@ get-targets:
 	$(eval local_folder := $(word 2,$(target)))
 	$(eval asset_type := $(word 3,$(target)))
 	$(eval asset_path := $(word 4,$(target)))
-	# for whatever reason, we have no subdomains for the sites that use rsync.
+#	for whatever reason, we have no subdomains for the sites that use rsync.
 	$(eval subdomains_csv := '')
 
 	$(call rsync,$(remote_host),$(local_folder),$(asset_type),$(asset_path))
