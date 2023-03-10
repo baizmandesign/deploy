@@ -256,6 +256,18 @@ websites = [
 	'webhost': 'bluehost',
 	'client': 'lta',
 },
+# saoriworcester.com
+{
+	'domain': 'saoriworcester.com',
+	'remote_host': saori,
+	'subfolder': 'saoriworcester.com',
+	'subdomains': ['dev',],
+	'function': 'git',
+	'dependencies': [ { 'type': 'theme', 'path': 'saori-worcester-theme',}, ],
+	'alias': 'saori',
+	'webhost': 'dreamhost',
+	'client': 'saor',
+},
 
 ]
 
