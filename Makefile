@@ -37,8 +37,8 @@ WP_THEMES_DIR = themes
 
 # use git to pull the freshest branch.
 # $1 = remote ssh host
-# $2 = parent directory on the server (usually domain.org)
-# $3 = subdir (themes/plugins)
+# $2 = subdirectory on the remote server (usually domain.org)
+# $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin path (whatever.org-plugin) / theme path (whatever.org-theme)
 # this function is called from within a for loop, and therefore requires the terminating ; and \.
 # if it were called outside a for loop, it would not need those characters. plus, other make conventions would work (like pre-pending an @ symbol).
@@ -52,23 +52,25 @@ WP_THEMES_DIR = themes
 
 
 # $1 = remote ssh host
-# $2 = parent directory on the server (usually domain.org)
-# $3 = subdir (themes/plugins)
+# $2 = subdirectory on the remote server (usually domain.org)
+# $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin or theme path
 # for git where we have to cd into a local directory.
-define local_cd_git
-	echo executing local_cd_git... ; \
+# FIXME: check return value of SSH command.
+define git_cd
+	echo executing git_cd... ; \
 	echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
 	${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
 	echo
 endef
 
 # $1 = remote ssh host
-# $2 = local site path (~/www/domain.test)
-# $3 = subdir (themes/plugins)
+# $2 = local subdirectory (~/www/domain.test)
+# $3 = wp-content subdirectory (themes/plugins)
 # $4 = plugin or theme path
 # for rsync (where we can't use git, for whatever reason).
 # these commands are not in a shell loop and don't need "special" treatment.
+# FIXME: check if local subfolder exists.
 define rsync
 	@ echo executing rsync for ${4}...
 	@ echo ${RSYNC} -a --exclude-from=${EXCLUDE} --verbose --progress --rsh=ssh ${LOCAL_PATH_PREFIX}/${2}/${WP_CONTENT_DIR}/${3}s/${4}/ ${1}:${FLYWHEEL_PATH}/${WP_CONTENT_DIR}/${3}s/${4}/
@@ -76,6 +78,8 @@ define rsync
 	@ echo
 endef
 
+# default target (first one in Makefile executed when to targets are specified).
+# usage function. print help text.
 define print_usage
 	@ ${ECHO} usage: make \<client_code\>
 	@ ${ECHO} usage: make \<website\>
@@ -104,7 +108,8 @@ MAKE_TARGETS := $(shell python3 $(MAKEFILE_DIR)$(GENERATE_MAKE_TARGETS_PY) > $(M
 include $(MAKEFILE_DIR)$(TARGETS_FILE)
 
 # include any other custom targets in the current directory
--include $(TARGETS_FILE)
+# fail silently if not found
+-include ./$(TARGETS_FILE)
 
 get-targets:
 	@ $(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$1}' | $(SORT)
@@ -132,7 +137,7 @@ get-targets:
 	$(error Incorrect number of arguments in target))
 	
 	$(eval remote_host := $(firstword $(target)))
-	$(eval remote_folder := $(word 2,$(target)))
+	$(eval remote_subdirectory := $(word 2,$(target)))
 	$(eval asset_type := $(word 3,$(target)))
 	$(eval asset_path := $(word 4,$(target)))
 	$(eval subdomains_csv := $(word 5,$(target)))
@@ -142,10 +147,10 @@ get-targets:
 #	do we only have 5 arguments (no subdomains)? if so, set the subdomains to nothing. if not, create the proper subdomain list and the append domain name to each subdomain.	
 	$(if $(filter 5,$(words $(target))),$(eval subdomains := ""), \
 	$(eval subdomain_list := $(foreach sub, \
-	$(subdomains),$(sub).$(remote_folder))))
+	$(subdomains),$(sub).$(remote_subdirectory))))
 
-	for website in $(remote_folder) $(subdomain_list) ; do \
-		$(call local_cd_git,$(remote_host),$${website},$(asset_type),$(asset_path)) ; \
+	for website in $(remote_subdirectory) $(subdomain_list) ; do \
+		$(call git_cd,$(remote_host),$${website},$(asset_type),$(asset_path)) ; \
 	done
 
 # catch all targets that end in "/rsync"
@@ -163,10 +168,10 @@ get-targets:
 	$(error Incorrect number of arguments in target))
 
 	$(eval remote_host := $(firstword $(target)))
-	$(eval local_folder := $(word 2,$(target)))
+	$(eval local_subfolder := $(word 2,$(target)))
 	$(eval asset_type := $(word 3,$(target)))
 	$(eval asset_path := $(word 4,$(target)))
 #	for whatever reason, we have no subdomains for the sites that use rsync.
 	$(eval subdomains_csv := '')
 
-	$(call rsync,$(remote_host),$(local_folder),$(asset_type),$(asset_path))
+	$(call rsync,$(remote_host),$(local_subfolder),$(asset_type),$(asset_path))
