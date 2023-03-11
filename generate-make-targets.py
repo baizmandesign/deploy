@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# TODO: load data from external TSV file. Adding new sites is easier to update in a text file.
-# TODO: automatically surmise asset type from asset name.
+# TODO: automatically surmise asset type from asset name. Revise function in Makefile.
 
 '''
 This program prints a list of make targets.
@@ -55,7 +54,12 @@ def print_targets ( website_list ):
 		else:
 			clients[site['client']] = [ site['domain'] ]
 		
-		for sub in site['subdomains'].split(LIST_SEPARATOR):
+		# strip leading and trailing whitespace from subdomains
+		website_subdomains = []
+		if site['subdomains'] != '':
+			 website_subdomains = [ website_subdomain.strip() for website_subdomain in site['subdomains'].split(LIST_SEPARATOR) ]
+		
+		for sub in website_subdomains:
 			if sub in subdomains:
 				subdomains[sub].append ( sub + '.' + site['domain'] )
 			else:
@@ -64,7 +68,7 @@ def print_targets ( website_list ):
 		prod_domains.append ( site['domain'] )
 		
 		all_domains = [ site['domain'] ]
-		all_domains += [ sub+'.'+site['domain'] for sub in site['subdomains'].split(LIST_SEPARATOR) if sub != '']
+		all_domains += [ sub+'.'+site['domain'] for sub in website_subdomains ]
 
 		# print alias target
 		print('{alias}: {domains}'.format ( alias = site['alias'], domains = DEPENDENCY_SEPARATOR.join ( all_domains ) ))
@@ -79,6 +83,8 @@ def print_targets ( website_list ):
 			dependency_target = ''
 			dependencies = [ ]
 			for dependency in site['dependencies'].split(LIST_SEPARATOR):
+				# strip leading and trailing whitespace
+				dependency = dependency.strip()
 				# over-ride the subfolder value if we're doing rsync for bdsl
 				if site['function'] == 'rsync' and dependency == BDSL_PLUGIN_PATH:
 					site['subfolder'] = '$(BDSL_PATH_LOCAL)'
@@ -118,14 +124,15 @@ def print_targets ( website_list ):
 	print ('bdsl: {bdsl_websites}'.format( bdsl_websites = SPACE.join(bdsl_websites)))
 	print()
 	
-	# FIXME: need to pass other values, not just domain
-	# for subdomain in subdomains:
-	# 	print('{subdomain}: {domains}'.format( subdomain = subdomain, domains = SPACE.join(subdomains[subdomain])))
-	# 	print()
+	print('# targets for all subdomains')
+	for subdomain in subdomains:
+		print('# target for {subdomain}'.format( subdomain = subdomain ))
+		print('{subdomain}: {domains}'.format( subdomain = subdomain, domains = SPACE.join(subdomains[subdomain] )))
+		print()
 
-	# FIXME: this will update all subdomains
-	#print ('prod: {prod_domains}'.format( prod_domains = SPACE.join(prod_domains)))
-	#print()
+	print('# all production domains')
+	print ('prod: {prod_domains}'.format( prod_domains = SPACE.join(prod_domains)))
+	print()
 	
 	print('# every site for every client')
 	# does everything for every client
@@ -156,8 +163,9 @@ with open(FILENAME, 'r') as tsvfile:
 		if actual_field_count != FIELD_COUNT:
 			print ("Line {line_number} contains {actual_field_count} fields and must have {field_count} fields.".format ( line_number = line_number, actual_field_count = actual_field_count, field_count = FIELD_COUNT ))
 			sys.exit(1)
-		#print('|'.join(line))
-		websites.append (line)
+		#strip spaces from values
+		line_stripped = { key: value.strip() for key, value in line.items() }		
+		websites.append (line_stripped)
 		line_number+=1
 
 print_targets (websites)
