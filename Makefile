@@ -21,7 +21,7 @@ EXCLUDE = ${MAKEFILE_DIR}excluded.txt
 GENERATE_MAKE_TARGETS_PY = generate-make-targets.py
 TARGETS_FILE = targets.makefile
 COMMA := ,
-
+TSV_FILENAME = websites.tsv
 
 # flywheel stuff
 LOCAL_PATH_PREFIX = ~/www
@@ -40,13 +40,11 @@ WP_THEMES_DIR = themes
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin path (whatever.org-plugin) / theme path (whatever.org-theme)
-# this function is called from within a for loop, and therefore requires the terminating ; and \.
-# if it were called outside a for loop, it would not need those characters. plus, other make conventions would work (like pre-pending an @ symbol).
 # FIXME: I changed the order of arguments, but not the function calls.
 # NOTE: this is deprecated, since the other function works for older and newer versions of git.
 ##define remote_git
-##	echo executing remote_git... ; \
-##	echo ${SSH} ${1} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${2}/${WP_CONTENT_DIR}/${3}/${4} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
+##	echo executing remote_git...
+##	echo ${SSH} ${1} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${2}/${WP_CONTENT_DIR}/${3}/${4} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
 ##	echo
 ##endef
 
@@ -60,9 +58,9 @@ WP_THEMES_DIR = themes
 # for git where we have to cd into a local directory.
 # FIXME: check return value of SSH command.
 define git_cd
-	echo executing git_cd...
-	echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
-	${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
+	@ echo executing git_cd...
+	@ echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
+	@ ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
 	echo
 endef
 
@@ -104,7 +102,7 @@ usage:
 
 # https://stackoverflow.com/questions/2122602/force-makefile-to-execute-script-before-building-targets
 # runs every time make runs.
-MAKE_TARGETS := $(shell python3 $(MAKEFILE_DIR)$(GENERATE_MAKE_TARGETS_PY) > $(MAKEFILE_DIR)$(TARGETS_FILE))
+MAKE_TARGETS := $(shell python3 $(MAKEFILE_DIR)$(GENERATE_MAKE_TARGETS_PY) $(MAKEFILE_DIR)$(TSV_FILENAME)> $(MAKEFILE_DIR)$(TARGETS_FILE))
 
 # include generated targets from external file
 include $(MAKEFILE_DIR)$(TARGETS_FILE)

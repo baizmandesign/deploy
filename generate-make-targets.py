@@ -8,15 +8,25 @@
 This program prints a list of make targets.
 '''
 
+import csv, os, sys
+
+TSV_DELIMITER='\t'
 PART_SEPARATOR = '/'
-SUBDOMAIN_SEPARATOR = ','
+LIST_SEPARATOR = ','
 SPACE = ' '
 DEPENDENCY_SEPARATOR = SPACE
 BDSL_PLUGIN_PATH = 'baizman-design-standard-library'
-BDSL_PLUGIN = { 'type': 'plugin', 'path': BDSL_PLUGIN_PATH,}
+#BDSL_PLUGIN = { 'type': 'plugin', 'path': BDSL_PLUGIN_PATH,}
 LTA_DREAMHOST = 'cap'
 LTA_BLUEHOST = 'lta'
+FIELD_COUNT = 9 # number of fields in tsv file
 
+def usage ( ):
+	"""print a usage statement."""
+	print()
+	print('usage: {self} <tsv_file>'.format ( self = os.path.basename( sys.argv[0] ) ) )
+	print()
+	sys.exit(0)
 
 def print_targets ( website_list ):
 	
@@ -45,7 +55,7 @@ def print_targets ( website_list ):
 		else:
 			clients[site['client']] = [ site['domain'] ]
 		
-		for sub in site['subdomains']:
+		for sub in site['subdomains'].split(LIST_SEPARATOR):
 			if sub in subdomains:
 				subdomains[sub].append ( sub + '.' + site['domain'] )
 			else:
@@ -54,7 +64,7 @@ def print_targets ( website_list ):
 		prod_domains.append ( site['domain'] )
 		
 		all_domains = [ site['domain'] ]
-		all_domains += [ sub+'.'+site['domain'] for sub in site['subdomains']]
+		all_domains += [ sub+'.'+site['domain'] for sub in site['subdomains'].split(LIST_SEPARATOR) if sub != '']
 
 		# print alias target
 		print('{alias}: {domains}'.format ( alias = site['alias'], domains = DEPENDENCY_SEPARATOR.join ( all_domains ) ))
@@ -68,16 +78,26 @@ def print_targets ( website_list ):
 		for domain in all_domains:
 			dependency_target = ''
 			dependencies = [ ]
-			for dependency in site['dependencies']:
+			for dependency in site['dependencies'].split(LIST_SEPARATOR):
 				# over-ride the subfolder value if we're doing rsync for bdsl
-				if site['function'] == 'rsync' and dependency['path'] == BDSL_PLUGIN_PATH:
+				if site['function'] == 'rsync' and dependency == BDSL_PLUGIN_PATH:
 					site['subfolder'] = '$(BDSL_PATH_LOCAL)'
+				dependency_type = 'UNKNOWN'
+				if dependency.endswith('-theme'):
+					dependency_type = 'theme'
+				if dependency.endswith('-plugin') or dependency == BDSL_PLUGIN_PATH:
+					dependency_type = 'plugin'
 				
-				dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], domain, dependency['type'], dependency['path'], site['function'] ] )
+				if dependency_type == 'UNKNOWN':
+					print()
+					print('# Warning: {dependency} is neither a plugin nor theme. Aborting.'.format ( dependency = dependency ) )
+					print()
+					sys.exit(1)
+				dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], domain, dependency_type, dependency, site['function'] ] )
 					
 				dependencies.append ( dependency_target )
 					
-				if dependency['path'] == BDSL_PLUGIN_PATH:
+				if dependency == BDSL_PLUGIN_PATH:
 					bdsl_websites.append ( dependency_target )
 						
 	
@@ -111,165 +131,33 @@ def print_targets ( website_list ):
 	# does everything for every client
 	print('all: {clients}'.format(clients = SPACE.join(clients.keys())))
 	print()
-	
-websites = [ 
-# sowa.massart.edu
-{
-	'domain': 'sowa.massart.edu',
-	'remote_host': 'sowa',
-	'subfolder': 'sowa.massart.edu',
-	'subdomains': [], # comma-separated list of subdomain names, without the domain portion
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'sowa.massart.edu-plugin',}, { 'type': 'theme', 'path': 'sowa.massart.edu-theme',} ],
-	'alias': 'sowa',
-	'webhost': 'dreamhost',
-	'client': 'sowa',
-},
-# ane.massart.edu
-{
-	'domain': 'ane.massart.edu',
-	'remote_host': 'ane',
-	'subfolder': 'ane.massart.edu',
-	'subdomains': [],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'ane-plugin',}, { 'type': 'theme', 'path': 'ane-theme',} ],
-	'alias': 'ane',
-	'webhost': 'dreamhost',
-	'client': 'pce',
-},
-# pce.massart.edu
-{
-	'domain': 'pce.massart.edu',
-	'remote_host': 'pce-prod',
-	'subfolder': 'pce.test',
-	'subdomains': [],
-	'function': 'rsync',
-	'dependencies': [ { 'type': 'plugin','path': 'pce-plugin',}, { 'type': 'theme', 'path': 'pce-theme',}, BDSL_PLUGIN ],
-	'alias': 'pce',
-	'webhost': 'flywheel',
-	'client': 'pce',
-},
-# 826boston.org
-{
-	'domain': '826boston.org',
-	'remote_host': '826-prod',
-	'subfolder': '826boston.test',
-	'subdomains': [],
-	'function': 'rsync',
-	'dependencies': [ { 'type': 'theme', 'path': 'yetti',}, BDSL_PLUGIN ],
-	'alias': '826',
-	'webhost': 'flywheel',
-	'client': '826b',
-},
-# lifetimearts.org
-{
-	'domain': 'lifetimearts.org',
-	'remote_host': LTA_BLUEHOST,
-	'subfolder': 'lifetimearts.org',
-	'subdomains': ['dev','staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'lifetime-arts-plugin',}, { 'type': 'theme', 'path': 'lifetime-arts-theme',}, BDSL_PLUGIN ],
-	'alias': 'la',
-	'webhost': 'bluehost',
-	'client': 'lta',
-},
-# baizmandesign.com
-{
-	'domain': 'baizmandesign.com',
-	'remote_host': 'bd',
-	'subfolder': 'baizmandesign.com',
-	'subdomains': ['dev','staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'baizmandesign.com-plugin',}, { 'type': 'theme', 'path': 'baizmandesign.com-theme',}, BDSL_PLUGIN ],
-	'alias': 'bd',
-	'webhost': 'dreamhost',
-	'client': 'bzmn',
-},
-# saulbaizman.com
-{
-	'domain': 'saulbaizman.com',
-	'remote_host': 'b',
-	'subfolder': 'saulbaizman.com',
-	'subdomains': ['dev','staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'saulbaizman.com-plugin',}, { 'type': 'theme', 'path': 'saulbaizman.com-theme',}, BDSL_PLUGIN ],
-	'alias': 'sb',
-	'webhost': 'dreamhost',
-	'client': 'bzmn',
-},
-# creativeagingportal.org
-{
-	'domain': 'creativeagingportal.org',
-	'remote_host': LTA_DREAMHOST,
-	'subfolder': 'creativeagingportal.org',
-	'subdomains': ['dev','staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'creative-aging-portal-plugin',}, { 'type': 'theme', 'path': 'creative-aging-portal-theme',}, BDSL_PLUGIN ],
-	'alias': 'cap',
-	'webhost': 'dreamhost',
-	'client': 'lta',
-},
-# creativeagingresource.org
-{
-	'domain': 'creativeagingresource.org',
-	'remote_host': LTA_DREAMHOST,
-	'subfolder': 'creativeagingresource.org',
-	'subdomains': ['dev','staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'car-plugin',}, { 'type': 'theme', 'path': 'car-theme',}, BDSL_PLUGIN ],
-	'alias': 'car',
-	'webhost': 'dreamhost',
-	'client': 'lta',
-},
-# beagefriendly.org
-{
-	'domain': 'beagefriendly.org',
-	'remote_host': LTA_DREAMHOST,
-	'subfolder': 'beagefriendly.org',
-	'subdomains': ['dev','staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'baf-plugin',}, { 'type': 'theme', 'path': 'dhyana',}, BDSL_PLUGIN ],
-	'alias': 'baf',
-	'webhost': 'dreamhost',
-	'client': 'lta',
-},
-# nyccreativeaginginitiative.org
-{
-	'domain': 'nyccreativeaginginitiative.org',
-	'remote_host': LTA_DREAMHOST,
-	'subfolder': 'nyccreativeaginginitiative.org',
-	'subdomains': ['dev','staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'plugin','path': 'nyccai-plugin',}, { 'type': 'theme', 'path': 'nyccai',}, BDSL_PLUGIN ],
-	'alias': 'nyccai',
-	'webhost': 'dreamhost',
-	'client': 'lta',
-},
-# creativeagingtoolkit.org
-{
-	'domain': 'creativeagingtoolkit.org',
-	'remote_host': LTA_BLUEHOST,
-	'subfolder': 'creativeagingtoolkit.org',
-	'subdomains': ['staging',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'theme', 'path': 'creativeagingtoolkit-sunset',}, BDSL_PLUGIN ],
-	'alias': 'cat',
-	'webhost': 'bluehost',
-	'client': 'lta',
-},
-# saoriworcester.com
-{
-	'domain': 'saoriworcester.com',
-	'remote_host': 'saori',
-	'subfolder': 'saoriworcester.com',
-	'subdomains': ['dev',],
-	'function': 'git',
-	'dependencies': [ { 'type': 'theme', 'path': 'saori-worcester-theme',}, ],
-	'alias': 'saori',
-	'webhost': 'dreamhost',
-	'client': 'saor',
-},
 
-]
+if len(sys.argv) != 2:
+	usage()
+
+FILENAME=sys.argv[1]
+
+if not os.path.exists(FILENAME):
+	print()
+	print('TSV file "{file}" does not exist. Exiting.'.format ( file = FILENAME ) )
+	print()
+	sys.exit(1)
+
+with open(FILENAME, 'r') as tsvfile:
+	websites_tsv = csv.DictReader(tsvfile, delimiter=TSV_DELIMITER, quotechar='"')
+	line_number = 0
+	websites = []
+	for line in websites_tsv:
+		# skip the first line (column headings)
+		# if line_number == 0:
+			# line_number+=1
+			# continue
+		actual_field_count = len (line)
+		if actual_field_count != FIELD_COUNT:
+			print ("Line {line_number} contains {actual_field_count} fields and must have {field_count} fields.".format ( line_number = line_number, actual_field_count = actual_field_count, field_count = FIELD_COUNT ))
+			sys.exit(1)
+		#print('|'.join(line))
+		websites.append (line)
+		line_number+=1
 
 print_targets (websites)
