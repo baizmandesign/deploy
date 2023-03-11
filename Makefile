@@ -55,12 +55,14 @@ WP_THEMES_DIR = themes
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin or theme path
+# $5 = git remote
+# $6 = git branch
 # for git where we have to cd into a local directory.
 # FIXME: check return value of SSH command.
 define git_cd
-	echo executing git_cd... ; \
-	echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
-	${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH} ; \
+	echo executing git_cd...
+	echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
+	${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
 	echo
 endef
 
@@ -130,9 +132,8 @@ get-targets:
 
 	$(eval target := $(subst /, ,$@))
 
-#	do we have 5 or 6 arguments? when the subdomain parameter is empty ("//"), we have one less argument than usual.
-	$(if $(or $(filter 5,$(words $(target))), \
-	$(filter 6,$(words $(target)))), \
+#	do we have 5 arguments?
+	$(if $(filter 5,$(words $(target))), \
 	, \
 	$(error Incorrect number of arguments in target))
 	
@@ -140,18 +141,9 @@ get-targets:
 	$(eval remote_subdirectory := $(word 2,$(target)))
 	$(eval asset_type := $(word 3,$(target)))
 	$(eval asset_path := $(word 4,$(target)))
-	$(eval subdomains_csv := $(word 5,$(target)))
 
-	$(eval subdomains := $(subst $(COMMA), ,$(subdomains_csv)))
+	$(call git_cd,$(remote_host),${remote_subdirectory},$(asset_type),$(asset_path),$(GIT_REMOTE),$(GIT_BRANCH))
 
-#	do we only have 5 arguments (no subdomains)? if so, set the subdomains to nothing. if not, create the proper subdomain list and the append domain name to each subdomain.	
-	$(if $(filter 5,$(words $(target))),$(eval subdomains := ""), \
-	$(eval subdomain_list := $(foreach sub, \
-	$(subdomains),$(sub).$(remote_subdirectory))))
-
-	for website in $(remote_subdirectory) $(subdomain_list) ; do \
-		$(call git_cd,$(remote_host),$${website},$(asset_type),$(asset_path)) ; \
-	done
 
 # catch all targets that end in "/rsync"
 %/rsync:
@@ -161,9 +153,8 @@ get-targets:
 	
 	$(eval target := $(subst /, ,$@))
 
-#	do we have 5 or 6 arguments? when the subdomain parameter is empty ("//"), we have one less argument than usual.
-	$(if $(or $(filter 5,$(words $(target))), \
-	$(filter 6,$(words $(target)))), \
+#	do we have 5 arguments?
+	$(if $(filter 5,$(words $(target))), \
 	, \
 	$(error Incorrect number of arguments in target))
 
@@ -171,7 +162,5 @@ get-targets:
 	$(eval local_subfolder := $(word 2,$(target)))
 	$(eval asset_type := $(word 3,$(target)))
 	$(eval asset_path := $(word 4,$(target)))
-#	for whatever reason, we have no subdomains for the sites that use rsync.
-	$(eval subdomains_csv := '')
 
 	$(call rsync,$(remote_host),$(local_subfolder),$(asset_type),$(asset_path))

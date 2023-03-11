@@ -53,56 +53,57 @@ def print_targets ( website_list ):
 		
 		prod_domains.append ( site['domain'] )
 		
+		all_domains = [ site['domain'] ]
+		all_domains += [ sub+'.'+site['domain'] for sub in site['subdomains']]
+
 		# print alias target
-		print('{alias}: {domain}'.format ( alias = site['alias'], domain = site['domain']))
+		print('{alias}: {domains}'.format ( alias = site['alias'], domains = DEPENDENCY_SEPARATOR.join ( all_domains ) ))
 		print()
 		
 		# print dependencies
-		# sowa.massart.edu: sowa/sowa.massart.edu/plugin/sowa.massart.edu-plugin//git sowa/sowa.massart.edu/theme/sowa.massart.edu-theme//git
-		dependencies = []
+		# sowa.massart.edu: sowa/sowa.massart.edu/plugin/sowa.massart.edu-plugin/git sowa/sowa.massart.edu/theme/sowa.massart.edu-theme/git
 		# loop through all dependencies
-		for dependency in site['dependencies']:
+		# print('all_domains:',all_domains)
+		# exit()
+		for domain in all_domains:
 			dependency_target = ''
-			# over-ride the subfolder value if we're doing rsync for bdsl
-			if site['function'] == 'rsync' and dependency['path'] == BDSL_PLUGIN_PATH:
-				site['subfolder'] = '$(BDSL_PATH_LOCAL)'
-			
-			dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], site['subfolder'], dependency['type'], dependency['path'], SUBDOMAIN_SEPARATOR.join(site['subdomains']), site['function'] ] )
+			dependencies = [ ]
+			for dependency in site['dependencies']:
+				# over-ride the subfolder value if we're doing rsync for bdsl
+				if site['function'] == 'rsync' and dependency['path'] == BDSL_PLUGIN_PATH:
+					site['subfolder'] = '$(BDSL_PATH_LOCAL)'
 				
-			dependencies.append ( dependency_target )
-				
-			if dependency['path'] == BDSL_PLUGIN_PATH:
-				bdsl_websites.append ( dependency_target )
+				dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], domain, dependency['type'], dependency['path'], site['function'] ] )
 					
-
-		print('{domain}: {target}'.format ( domain = site['domain'], target = DEPENDENCY_SEPARATOR.join ( dependencies ) ))
-		print()
+				dependencies.append ( dependency_target )
+					
+				if dependency['path'] == BDSL_PLUGIN_PATH:
+					bdsl_websites.append ( dependency_target )
+						
 	
-	# print('webhosts:',webhosts)
+			print('{domain}: {target}'.format ( domain = domain, target = DEPENDENCY_SEPARATOR.join ( dependencies ) ))
+			print()
+	
 	print('# webhost targets')
 	for host in webhosts:
 		print('{webhost}: {list}'.format( webhost = host, list = SPACE.join(webhosts[host])))
 		print()
 	
 	print('# client targets')
-	# print('clients:',clients)
 	for client in clients:
 		print('{cli}: {list}'.format( cli = client, list = SPACE.join(clients[client])))
 		print()
 	
 	print('# bdsl plugin targets')
-	# print('bdsl_websites:',bdsl_websites)
 	print ('bdsl: {bdsl_websites}'.format( bdsl_websites = SPACE.join(bdsl_websites)))
 	print()
 	
 	# FIXME: need to pass other values, not just domain
-	# print('subdomains:',subdomains)
 	# for subdomain in subdomains:
 	# 	print('{subdomain}: {domains}'.format( subdomain = subdomain, domains = SPACE.join(subdomains[subdomain])))
 	# 	print()
 
 	# FIXME: this will update all subdomains
-	# print('prod_domains:',prod_domains)
 	#print ('prod: {prod_domains}'.format( prod_domains = SPACE.join(prod_domains)))
 	#print()
 	
@@ -259,7 +260,7 @@ websites = [
 # saoriworcester.com
 {
 	'domain': 'saoriworcester.com',
-	'remote_host': saori,
+	'remote_host': 'saori',
 	'subfolder': 'saoriworcester.com',
 	'subdomains': ['dev',],
 	'function': 'git',
