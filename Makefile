@@ -102,7 +102,7 @@ usage:
 
 # https://stackoverflow.com/questions/2122602/force-makefile-to-execute-script-before-building-targets
 # runs every time make runs.
-MAKE_TARGETS := $(shell python3 $(MAKEFILE_DIR)$(GENERATE_MAKE_TARGETS_PY) $(MAKEFILE_DIR)$(TSV_FILENAME)> $(MAKEFILE_DIR)$(TARGETS_FILE))
+$(shell python3 $(MAKEFILE_DIR)$(GENERATE_MAKE_TARGETS_PY) $(MAKEFILE_DIR)$(TSV_FILENAME)> $(MAKEFILE_DIR)$(TARGETS_FILE))
 
 # include generated targets from external file
 include $(MAKEFILE_DIR)$(TARGETS_FILE)
