@@ -9,6 +9,8 @@ REMOTE_GIT = git
 REMOTE_GIT_ARG = -C
 ECHO = /bin/echo
 RSYNC = /usr/bin/rsync
+WP = /usr/local/bin/wp
+WP_COMMAND = update
 GREP = /usr/bin/grep
 AWK = /usr/bin/awk
 SORT = /usr/bin/sort
@@ -43,9 +45,9 @@ WP_THEMES_DIR = themes
 # FIXME: I changed the order of arguments, but not the function calls.
 # NOTE: this is deprecated, since the other function works for older and newer versions of git.
 ##define remote_git
-##	echo executing remote_git...
-##	echo ${SSH} ${1} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${2}/${WP_CONTENT_DIR}/${3}/${4} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
-##	echo
+##	@ echo executing remote_git...
+##	${SSH} ${1} ${REMOTE_GIT} ${REMOTE_GIT_ARG} ${2}/${WP_CONTENT_DIR}/${3}/${4} ${GIT_COMMAND} ${GIT_REMOTE} ${GIT_BRANCH}
+##	@ echo
 ##endef
 
 
@@ -58,10 +60,9 @@ WP_THEMES_DIR = themes
 # for git where we have to cd into a local directory.
 # FIXME: check return value of SSH command.
 define git_cd
-	@ echo executing git_cd...
-	@ echo ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
-	@ ${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
-	echo
+	@ echo executing git_cd for ${4}...
+	${SSH} ${1} cd ${2}/${WP_CONTENT_DIR}/${3}s/${4} \&\& ${REMOTE_GIT} ${GIT_COMMAND} ${5} ${6}
+	@ echo
 endef
 
 # $1 = remote ssh host
@@ -73,12 +74,21 @@ endef
 # FIXME: check if local subfolder exists.
 define rsync
 	@ echo executing rsync for ${4}...
-	@ echo ${RSYNC} -a --exclude-from=${EXCLUDE} --verbose --progress --rsh=ssh ${LOCAL_PATH_PREFIX}/${2}/${WP_CONTENT_DIR}/${3}s/${4}/ ${1}:${FLYWHEEL_PATH}/${WP_CONTENT_DIR}/${3}s/${4}/
-	@ ${RSYNC} -a --exclude-from=${EXCLUDE} --verbose --progress --rsh=ssh ${LOCAL_PATH_PREFIX}/${2}/${WP_CONTENT_DIR}/${3}s/${4}/ ${1}:${FLYWHEEL_PATH}/${WP_CONTENT_DIR}/${3}s/${4}/
+	${RSYNC} -a --exclude-from=${EXCLUDE} --verbose --progress --rsh=ssh ${LOCAL_PATH_PREFIX}/${2}/${WP_CONTENT_DIR}/${3}s/${4}/ ${1}:${FLYWHEEL_PATH}/${WP_CONTENT_DIR}/${3}s/${4}/
 	@ echo
 endef
 
-# default target (first one in Makefile executed when to targets are specified).
+# $1 = remote ssh host
+# $2 = subdirectory on the remote server (usually domain.org)
+# $3 = wp cli subcommand (theme or plugin)
+# $4 = plugin or theme path
+define wp
+	@ echo executing wp for ${4}...
+	${WP} --ssh=${1} --path=${2} ${3} ${WP_COMMAND} ${4}
+	@ echo
+endef
+
+# default target. the first one in a Makefile is executed when no target is specified.
 # usage function. print help text.
 define print_usage
 	@ ${ECHO} usage: make \<client_code\>
@@ -162,3 +172,24 @@ get-targets:
 	$(eval asset_path := $(word 4,$(target)))
 
 	$(call rsync,$(remote_host),$(local_subfolder),$(asset_type),$(asset_path))
+
+# catch all targets that end in "/wp"
+%/wp:
+	@echo
+	@echo target: $@
+	@echo
+
+	$(eval target := $(subst /, ,$@))
+
+#	do we have 5 arguments?
+	$(if $(filter 5,$(words $(target))), \
+	, \
+	$(error Incorrect number of arguments in target))
+
+	$(eval remote_host := $(firstword $(target)))
+	$(eval local_subfolder := $(word 2,$(target)))
+	$(eval asset_type := $(word 3,$(target)))
+	$(eval asset_path := $(word 4,$(target)))
+
+	$(call wp,$(remote_host),$(local_subfolder),$(asset_type),$(asset_path))
+
