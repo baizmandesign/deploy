@@ -17,9 +17,9 @@ SPACE = ' '
 DEPENDENCY_SEPARATOR = SPACE
 BDSL_PLUGIN_PATH = 'baizman-design-standard-library'
 BDSL_PATH_LOCAL = 'bd.test'
-LTA_DREAMHOST = 'cap'
-LTA_BLUEHOST = 'lta'
-FIELD_COUNT = 9 # number of fields in tsv file
+LTA_DREAMHOST = 'cap' # defined in ~/.ssh/config
+LTA_BLUEHOST = 'lta' # defined in ~/.ssh/config
+FIELD_COUNT = 9 # number of fields in tsv file, for data validation
 
 def usage ( ):
 	"""print a usage statement."""
@@ -35,7 +35,7 @@ def print_targets ( website_list ):
 
 	# sort list by domain name
 	# https://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary
-	website_list = sorted(website_list, key=lambda d: d['domain'])
+	website_list = sorted(website_list, key=lambda site: site['domain'])
 
 	webhosts = {}
 	clients = {}
@@ -45,11 +45,13 @@ def print_targets ( website_list ):
 	
 	for site in website_list:
 
+		# create dictionary keyed by webhosts
 		if site['webhost'] in webhosts:
 			webhosts[site['webhost']].append (site['domain'])
 		else:
 			webhosts[site['webhost']] = [ site['domain'] ]
 
+		# create dictionary keyed by clients
 		if site['client'] in clients:
 			clients[site['client']].append (site['domain'])
 		else:
@@ -60,6 +62,7 @@ def print_targets ( website_list ):
 		if site['subdomains'] != '':
 			 website_subdomains = [ website_subdomain.strip() for website_subdomain in site['subdomains'].split(LIST_SEPARATOR) ]
 		
+		# create a dictionary keyed by subdomain
 		for sub in website_subdomains:
 			if sub in subdomains:
 				subdomains[sub].append ( sub + '.' + site['domain'] )
@@ -68,6 +71,7 @@ def print_targets ( website_list ):
 		
 		prod_domains.append ( site['domain'] )
 		
+		# add subdomains to the list of domains
 		all_domains = [ site['domain'] ]
 		all_domains += [ sub+'.'+site['domain'] for sub in website_subdomains ]
 
@@ -75,11 +79,7 @@ def print_targets ( website_list ):
 		print('{alias}: {domains}'.format ( alias = site['alias'], domains = DEPENDENCY_SEPARATOR.join ( all_domains ) ))
 		print()
 		
-		# print dependencies
-		# sowa.massart.edu: sowa/sowa.massart.edu/plugin/sowa.massart.edu-plugin/git sowa/sowa.massart.edu/theme/sowa.massart.edu-theme/git
-		# loop through all dependencies
-		# print('all_domains:',all_domains)
-		# exit()
+		# loop through all dependencies of all domains
 		for domain in all_domains:
 			dependency_target = ''
 			dependencies = [ ]
@@ -158,10 +158,6 @@ if __name__ == "__main__":
 		line_number = 0
 		websites = []
 		for line in websites_tsv:
-			# skip the first line (column headings)
-			# if line_number == 0:
-				# line_number+=1
-				# continue
 			actual_field_count = len (line)
 			if actual_field_count != FIELD_COUNT:
 				print ("Line {line_number} contains {actual_field_count} fields and must have {field_count} fields.".format ( line_number = line_number, actual_field_count = actual_field_count, field_count = FIELD_COUNT ))
