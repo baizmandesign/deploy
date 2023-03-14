@@ -139,33 +139,35 @@ def print_targets ( website_list ):
 	print('all: {clients}'.format(clients = SPACE.join(clients.keys())))
 	print()
 
-if len(sys.argv) != 2:
-	usage()
+if __name__ == "__main__":
 
-FILENAME=sys.argv[1]
-
-if not os.path.exists(FILENAME):
-	print()
-	print('TSV file "{file}" does not exist. Exiting.'.format ( file = FILENAME ) )
-	print()
-	sys.exit(1)
-
-with open(FILENAME, 'r') as tsvfile:
-	websites_tsv = csv.DictReader(tsvfile, delimiter=TSV_DELIMITER, quotechar='"')
-	line_number = 0
-	websites = []
-	for line in websites_tsv:
-		# skip the first line (column headings)
-		# if line_number == 0:
-			# line_number+=1
-			# continue
-		actual_field_count = len (line)
-		if actual_field_count != FIELD_COUNT:
-			print ("Line {line_number} contains {actual_field_count} fields and must have {field_count} fields.".format ( line_number = line_number, actual_field_count = actual_field_count, field_count = FIELD_COUNT ))
-			sys.exit(1)
-		#strip spaces from values
-		line_stripped = { key: value.strip() for key, value in line.items() }		
-		websites.append (line_stripped)
-		line_number+=1
-
-print_targets (websites)
+	if len(sys.argv) != 2:
+		usage()
+	
+	FILENAME=sys.argv[1]
+	
+	if not os.path.exists(FILENAME):
+		print()
+		print('TSV file "{file}" does not exist. Exiting.'.format ( file = FILENAME ) )
+		print()
+		sys.exit(1)
+	
+	with open(FILENAME, 'r') as tsvfile:
+		websites_tsv = csv.DictReader(tsvfile, delimiter=TSV_DELIMITER, quotechar='"')
+		line_number = 0
+		websites = []
+		for line in websites_tsv:
+			# skip the first line (column headings)
+			# if line_number == 0:
+				# line_number+=1
+				# continue
+			actual_field_count = len (line)
+			if actual_field_count != FIELD_COUNT:
+				print ("Line {line_number} contains {actual_field_count} fields and must have {field_count} fields.".format ( line_number = line_number, actual_field_count = actual_field_count, field_count = FIELD_COUNT ))
+				sys.exit(1)
+			#strip spaces from values
+			line_stripped = { key: value.strip() for key, value in line.items() }		
+			websites.append (line_stripped)
+			line_number+=1
+	
+	print_targets (websites)
