@@ -22,13 +22,11 @@ MAKEFILE_DIR = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 EXCLUDE = ${MAKEFILE_DIR}excluded.txt
 GENERATE_MAKE_TARGETS_PY = generate-make-targets.py
 TARGETS_FILE = targets.makefile
-COMMA := ,
 TSV_FILENAME = websites.tsv
 
 # flywheel stuff
 LOCAL_PATH_PREFIX = ~/www
 FLYWHEEL_PATH = /www
-BDSL_PATH_LOCAL = bd.test
 
 WP_CONTENT_DIR = wp-content
 WP_PLUGINS_DIR = plugins

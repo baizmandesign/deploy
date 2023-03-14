@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # TODO: automatically surmise asset type from asset name. Revise function in Makefile.
+# TODO: check for duplicate target names and abort. (It's permitted in make, but will create problems during execution.) 
 
 '''
 This program prints a list of make targets.
@@ -15,7 +16,7 @@ LIST_SEPARATOR = ','
 SPACE = ' '
 DEPENDENCY_SEPARATOR = SPACE
 BDSL_PLUGIN_PATH = 'baizman-design-standard-library'
-#BDSL_PLUGIN = { 'type': 'plugin', 'path': BDSL_PLUGIN_PATH,}
+BDSL_PATH_LOCAL = 'bd.test'
 LTA_DREAMHOST = 'cap'
 LTA_BLUEHOST = 'lta'
 FIELD_COUNT = 9 # number of fields in tsv file
@@ -87,7 +88,7 @@ def print_targets ( website_list ):
 				dependency = dependency.strip()
 				# over-ride the subfolder value if we're doing rsync for bdsl
 				if site['function'] == 'rsync' and dependency == BDSL_PLUGIN_PATH:
-					site['subfolder'] = '$(BDSL_PATH_LOCAL)'
+					site['subfolder'] = BDSL_PATH_LOCAL
 				dependency_type = 'UNKNOWN'
 				if dependency.endswith('-theme'):
 					dependency_type = 'theme'
@@ -96,7 +97,7 @@ def print_targets ( website_list ):
 				
 				if dependency_type == 'UNKNOWN':
 					print()
-					print('# Warning: {dependency} is neither a plugin nor theme. Aborting.'.format ( dependency = dependency ) )
+					print('# Warning: "{dependency}" is neither a plugin nor theme. Aborting.'.format ( dependency = dependency ) )
 					print()
 					sys.exit(1)
 				dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], site['subfolder'], dependency_type, dependency, site['function'] ] )
