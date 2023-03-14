@@ -96,7 +96,7 @@ define print_usage
 	@ ${ECHO} usage: make bdsl
 	@ ${ECHO} usage: make get-targets
 	@ ${ECHO}
-	@ ${ECHO} see other valid targets in $(MAKEFILE_DIR)$(TARGETS_FILE).
+	@ ${ECHO} see other valid targets in $(subst $(HOME),'~',$(MAKEFILE_DIR))$(TARGETS_FILE).
 	@ ${ECHO}
 	@ ${ECHO} add additional targets in ./$(TARGETS_FILE).
 	@ ${ECHO}
