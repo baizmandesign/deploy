@@ -100,7 +100,11 @@ def print_targets ( website_list ):
 					print('# Warning: "{dependency}" is neither a plugin nor theme. Aborting.'.format ( dependency = dependency ) )
 					print()
 					sys.exit(1)
-				dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], site['subfolder'], dependency_type, dependency, site['function'] ] )
+				if site['function'] == 'rsync':
+					dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], site['subfolder'], dependency_type, dependency, site['function'] ] )
+				#if site['function'] == 'git':
+				else:
+					dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], domain, dependency_type, dependency, site['function'] ] )
 					
 				dependencies.append ( dependency_target )
 					
