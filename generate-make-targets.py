@@ -76,6 +76,7 @@ def print_targets ( website_list ):
 		all_domains += [ sub+'.'+site['domain'] for sub in website_subdomains ]
 
 		# print alias target
+		print('.PHONY: {alias}'.format( alias = site['alias']))
 		print('{alias}: {domains}'.format ( alias = site['alias'], domains = DEPENDENCY_SEPARATOR.join ( all_domains ) ))
 		print()
 		
@@ -111,36 +112,42 @@ def print_targets ( website_list ):
 				if dependency == BDSL_PLUGIN_PATH:
 					bdsl_websites.append ( dependency_target )
 						
-	
+			print('.PHONY: {domain}'.format( domain = domain))
 			print('{domain}: {target}'.format ( domain = domain, target = DEPENDENCY_SEPARATOR.join ( dependencies ) ))
 			print()
 	
 	print('# webhost targets')
 	for host in webhosts:
+		print('.PHONY: {webhost}'.format( webhost = host))
 		print('{webhost}: {list}'.format( webhost = host, list = SPACE.join(webhosts[host])))
 		print()
 	
 	print('# client targets')
 	for client in clients:
+		print('.PHONY: {cli}'.format( cli = client))
 		print('{cli}: {list}'.format( cli = client, list = SPACE.join(clients[client])))
 		print()
 	
 	print('# bdsl plugin targets')
+	print('.PHONY: bdsl')
 	print ('bdsl: {bdsl_websites}'.format( bdsl_websites = SPACE.join(bdsl_websites)))
 	print()
 	
 	print('# targets for all subdomains')
 	for subdomain in subdomains:
 		print('# target for {subdomain}'.format( subdomain = subdomain ))
+		print('.PHONY: {subdomain}'.format( subdomain = subdomain))
 		print('{subdomain}: {domains}'.format( subdomain = subdomain, domains = SPACE.join(subdomains[subdomain] )))
 		print()
 
 	print('# all production domains')
+	print('.PHONY: prod')
 	print ('prod: {prod_domains}'.format( prod_domains = SPACE.join(prod_domains)))
 	print()
 	
 	print('# every site for every client')
 	# does everything for every client
+	print('.PHONY: all')
 	print('all: {clients}'.format(clients = SPACE.join(clients.keys())))
 	print()
 
