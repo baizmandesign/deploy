@@ -94,9 +94,11 @@ define print_usage
 	@ $(ECHO) usage: make bdsl
 	@ $(ECHO) usage: make get-targets
 	@ $(ECHO)
-	@ $(ECHO) see other valid targets in $(subst $(HOME),'~',$(MAKEFILE_DIR))$(TARGETS_FILE).
+	@ $(ECHO) "websites:       $(TSV_FILENAME)"
 	@ $(ECHO)
-	@ $(ECHO) add additional targets in ./$(TARGETS_FILE).
+	@ $(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))$(TARGETS_FILE)"
+	@ $(ECHO)
+	@ $(ECHO) "local targets:  ./$(TARGETS_FILE)"
 	@ $(ECHO)
 endef
 
