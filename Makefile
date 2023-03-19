@@ -39,11 +39,11 @@ WP_THEMES_DIR = themes
 # $1 = remote ssh host
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
-# $4 = plugin path (whatever.org-plugin) / theme path (whatever.org-theme)
+# $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 # FIXME: I changed the order of arguments, but not the function calls.
 # NOTE: this is deprecated, since the other function works for older and newer versions of git.
 ##define remote_git
-##	@ echo executing remote_git...
+##	@ echo executing function \"$0\" for $(4)...
 ##	$(SSH) $(1) $(REMOTE_GIT) $(REMOTE_GIT_ARG) $(2)/$(WP_CONTENT_DIR)/$(3)/$(4) $(GIT_COMMAND) $(GIT_REMOTE) $(GIT_BRANCH)
 ##	@ echo
 ##endef
@@ -52,26 +52,26 @@ WP_THEMES_DIR = themes
 # $1 = remote ssh host
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
-# $4 = plugin or theme path
+# $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 # $5 = git remote
 # $6 = git branch
 # for git where we have to cd into a local directory.
 # FIXME: check return value of SSH command.
 define git_cd
-	@ echo executing git_cd for $(4)...
 	$(SSH) $(1) cd $(2)/$(WP_CONTENT_DIR)/$(3)s/$(4) \&\& $(REMOTE_GIT) $(GIT_COMMAND) $(5) $(6)
+	@ echo executing function \"$0\" for $(4)...
 	@ echo
 endef
 
 # $1 = remote ssh host
 # $2 = local subdirectory (~/www/domain.test)
 # $3 = wp-content subdirectory (themes/plugins)
-# $4 = plugin or theme path
+# $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 # for rsync (where we can't use git, for whatever reason).
 # these commands are not in a shell loop and don't need "special" treatment.
 # FIXME: check if local subfolder exists.
 define rsync
-	@ echo executing rsync for $(4)...
+	@ echo executing function \"$0\" for $(4)...
 	$(RSYNC) -a --exclude-from=$(EXCLUDE) --verbose --progress --rsh=ssh $(LOCAL_PATH_PREFIX)/$(2)/$(WP_CONTENT_DIR)/$(3)s/$(4)/ $(1):$(FLYWHEEL_PATH)/$(WP_CONTENT_DIR)/$(3)s/$(4)/
 	@ echo
 endef
@@ -79,9 +79,9 @@ endef
 # $1 = remote ssh host
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp cli subcommand (theme or plugin)
-# $4 = plugin or theme path
+# $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 define wp
-	@ echo executing wp for $(4)...
+	@ echo executing function \"$0\" for $(4)...
 	$(WP) --ssh=$(1) --path=$(2) $(3) $(WP_COMMAND) $(4)
 	@ echo
 endef
