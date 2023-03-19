@@ -86,7 +86,6 @@ define wp
 	@ echo
 endef
 
-# default target. the first one in a Makefile is executed when no target is specified.
 # usage function. print help text.
 define print_usage
 	@ $(ECHO) usage: make \<client_code\>
@@ -103,7 +102,8 @@ define print_usage
 endef
 
 
-# first target is default target.
+# default target. the first one in a Makefile is executed when no target is specified.
+.PHONY: usage
 usage:
 	@ $(ECHO) 
 	@ $(ECHO) No target specified.
@@ -121,6 +121,7 @@ include $(MAKEFILE_DIR)$(TARGETS_FILE)
 # fail silently if not found
 -include ./$(TARGETS_FILE)
 
+.PHONY: get-targets
 get-targets:
 	@ $(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$1}' | $(SORT)
 #	TODO: print prerequisites?
@@ -133,6 +134,7 @@ get-targets:
 # sowa.massart.edu: % : sowa/%/plugin/sowa.massart.edu-plugin//git sowa/%/theme/sowa.massart.edu-theme//git
 
 # catch all targets that end in "/git"
+.PHONY: %/git
 %/git:
 	@echo
 	@echo target: $@
@@ -154,6 +156,7 @@ get-targets:
 
 
 # catch all targets that end in "/rsync"
+.PHONY: %/rsync
 %/rsync:
 	@echo
 	@echo target: $@
@@ -174,6 +177,7 @@ get-targets:
 	$(call rsync,$(remote_host),$(local_subfolder),$(asset_type),$(asset_path))
 
 # catch all targets that end in "/wp"
+.PHONY: %/wp
 %/wp:
 	@echo
 	@echo target: $@
