@@ -3,53 +3,53 @@
 # add new websites in generate-make-targets.py
 
 
-SHELL = /bin/sh
-SSH = /usr/bin/ssh
-REMOTE_GIT = git
-REMOTE_GIT_ARG = -C
-ECHO = /bin/echo
-RSYNC = /usr/bin/rsync
-WP = /usr/local/bin/wp
-WP_COMMAND = update
-GREP = /usr/bin/grep
-AWK = /usr/bin/awk
-SORT = /usr/bin/sort
-GIT_COMMAND = pull
-GIT_REMOTE = origin
-GIT_BRANCH = production
+SHELL := /bin/sh
+SSH := /usr/bin/ssh
+REMOTE_GIT := git
+REMOTE_GIT_ARG := -C
+ECHO := /bin/echo
+RSYNC := /usr/bin/rsync
+WP := /usr/local/bin/wp
+WP_COMMAND := update
+GREP := /usr/bin/grep
+AWK := /usr/bin/awk
+SORT := /usr/bin/sort
+GIT_COMMAND := pull
+GIT_REMOTE := origin
+GIT_BRANCH := production
 # https://stackoverflow.com/questions/2004760/get-makefile-directory
-MAKEFILE_DIR = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-EXCLUDE = ${MAKEFILE_DIR}excluded.txt
-GENERATE_MAKE_TARGETS_PY = generate-make-targets.py
-TARGETS_FILE = targets.makefile
-TSV_FILENAME = websites.tsv
+MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+EXCLUDE := ${MAKEFILE_DIR}excluded.txt
+GENERATE_MAKE_TARGETS_PY := generate-make-targets.py
+TARGETS_FILE := targets.makefile
+TSV_FILENAME := websites.tsv
 
 # flywheel stuff
-LOCAL_PATH_PREFIX = ~/www
-FLYWHEEL_PATH = /www
+LOCAL_PATH_PREFIX := ~/www
+FLYWHEEL_PATH := /www
 
-WP_CONTENT_DIR = wp-content
-WP_PLUGINS_DIR = plugins
-WP_THEMES_DIR = themes
+WP_CONTENT_DIR := wp-content
+WP_PLUGINS_DIR := plugins
+WP_THEMES_DIR := themes
 
 # precede command with "-" to continue even upon encountering an error
 # precede a command with "@" to silence output
 
 # use git to pull the freshest branch.
-# $1 = remote ssh host
+# $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 # FIXME: I changed the order of arguments, but not the function calls.
 # NOTE: this is deprecated, since the other function works for older and newer versions of git.
 ##define remote_git
-##	@ echo executing function \"$0\" for $(4)...
+##	@echo executing function \"$0\" for $(4)...
 ##	$(SSH) $(1) $(REMOTE_GIT) $(REMOTE_GIT_ARG) $(2)/$(WP_CONTENT_DIR)/$(3)/$(4) $(GIT_COMMAND) $(GIT_REMOTE) $(GIT_BRANCH)
-##	@ echo
+##	@echo
 ##endef
 
 
-# $1 = remote ssh host
+# $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
@@ -58,12 +58,12 @@ WP_THEMES_DIR = themes
 # for git where we have to cd into a local directory.
 # FIXME: check return value of SSH command.
 define git_cd
+	@echo executing function \"$0\" for $(4)...
 	$(SSH) $(1) cd $(2)/$(WP_CONTENT_DIR)/$(3)s/$(4) \&\& $(REMOTE_GIT) $(GIT_COMMAND) $(5) $(6)
-	@ echo executing function \"$0\" for $(4)...
-	@ echo
+	@echo
 endef
 
-# $1 = remote ssh host
+# $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = local subdirectory (~/www/domain.test)
 # $3 = wp-content subdirectory (themes/plugins)
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
@@ -71,43 +71,43 @@ endef
 # these commands are not in a shell loop and don't need "special" treatment.
 # FIXME: check if local subfolder exists.
 define rsync
-	@ echo executing function \"$0\" for $(4)...
+	@echo executing function \"$0\" for $(4)...
 	$(RSYNC) -a --exclude-from=$(EXCLUDE) --verbose --progress --rsh=ssh $(LOCAL_PATH_PREFIX)/$(2)/$(WP_CONTENT_DIR)/$(3)s/$(4)/ $(1):$(FLYWHEEL_PATH)/$(WP_CONTENT_DIR)/$(3)s/$(4)/
-	@ echo
+	@echo
 endef
 
-# $1 = remote ssh host
+# $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = subdirectory on the remote server (usually domain.org)
-# $3 = wp cli subcommand (theme or plugin)
+# $3 = wp cli subcommand ("theme" or "plugin")
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 define wp
-	@ echo executing function \"$0\" for $(4)...
+	@echo executing function \"$0\" for $(4)...
 	$(WP) --ssh=$(1) --path=$(2) $(3) $(WP_COMMAND) $(4)
-	@ echo
+	@echo
 endef
 
 # usage function. print help text.
 define print_usage
-	@ $(ECHO) usage: make \<client_code\>
-	@ $(ECHO) usage: make \<website\>
-	@ $(ECHO) usage: make bdsl
-	@ $(ECHO) usage: make get-targets
-	@ $(ECHO)
-	@ $(ECHO) "websites:       $(TSV_FILENAME)"
-	@ $(ECHO)
-	@ $(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))$(TARGETS_FILE)"
-	@ $(ECHO)
-	@ $(ECHO) "local targets:  ./$(TARGETS_FILE)"
-	@ $(ECHO)
+	@$(ECHO) usage: make \<client_code\>
+	@$(ECHO) usage: make \<website\>
+	@$(ECHO) usage: make bdsl
+	@$(ECHO) usage: make get-targets
+	@$(ECHO)
+	@$(ECHO) "websites:       $(TSV_FILENAME)"
+	@$(ECHO)
+	@$(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))$(TARGETS_FILE)"
+	@$(ECHO)
+	@$(ECHO) "local targets:  ./$(TARGETS_FILE)"
+	@$(ECHO)
 endef
 
 
 # default target. the first one in a Makefile is executed when no target is specified.
 .PHONY: usage
 usage:
-	@ $(ECHO) 
-	@ $(ECHO) No target specified.
-	@ $(ECHO) 
+	@$(ECHO) 
+	@$(ECHO) No target specified.
+	@$(ECHO) 
 	$(call print_usage)
 
 # https://stackoverflow.com/questions/2122602/force-makefile-to-execute-script-before-building-targets
@@ -123,9 +123,9 @@ include $(MAKEFILE_DIR)$(TARGETS_FILE)
 
 .PHONY: get-targets
 get-targets:
-	@ $(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$1}' | $(SORT)
+	@$(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$1}' | $(SORT)
 #	TODO: print prerequisites?
-#	@ $(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$2}' | $(SORT)
+#	@$(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$2}' | $(SORT)
 
 # use static pattern rule to substitute % for target name.
 # https://www.gnu.org/software/make/manual/make.html#Static-Pattern
