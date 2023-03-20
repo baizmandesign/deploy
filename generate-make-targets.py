@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # TODO: automatically surmise asset type from asset name. Revise function in Makefile.
-# TODO: check for duplicate target names and abort. (It's permitted in make, but will create problems during execution.) 
 
 '''
 This program prints a list of make targets.
@@ -28,10 +27,25 @@ def usage ( ):
 	print()
 	sys.exit(0)
 
+def duplicate_error ( duplicate ):
+	"""print duplicate error and abort."""
+	print('"{duplicate}" is a duplicate target name. Aborting...'.format(duplicate = duplicate))
+	print()
+	sys.exit(1)
+
+def print_target ( target, prerequisites ):
+	"""print a single target."""
+	print('.PHONY: {target}'.format(target = target))
+	print('{target}: {prerequisites}'.format(target = target, prerequisites = prerequisites))
+	print()
+
 def print_targets ( website_list ):
-	
+	"""print all asset targets."""
 	print('# note: the contents of this makefile must be included in the parent Makefile for deploy-make')
 	print()
+	
+	# create a list of unique targets. this will help identify potential duplicates.
+	unique_targets = []
 
 	# sort list by domain name
 	# https://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary
@@ -76,9 +90,12 @@ def print_targets ( website_list ):
 		all_domains += [ sub+'.'+site['domain'] for sub in website_subdomains ]
 
 		# print alias target
-		print('.PHONY: {alias}'.format( alias = site['alias']))
-		print('{alias}: {domains}'.format ( alias = site['alias'], domains = DEPENDENCY_SEPARATOR.join ( all_domains ) ))
-		print()
+		print_target (site['alias'], DEPENDENCY_SEPARATOR.join ( all_domains ))
+		
+		if site['alias'] not in unique_targets:
+			unique_targets.append ( site['alias'] )
+		else:
+			duplicate_error( site['alias'] )
 		
 		# loop through all dependencies of all domains
 		for domain in all_domains:
@@ -112,44 +129,54 @@ def print_targets ( website_list ):
 				if dependency == BDSL_PLUGIN_PATH:
 					bdsl_websites.append ( dependency_target )
 						
-			print('.PHONY: {domain}'.format( domain = domain))
-			print('{domain}: {target}'.format ( domain = domain, target = DEPENDENCY_SEPARATOR.join ( dependencies ) ))
-			print()
-	
+			print_target (domain, DEPENDENCY_SEPARATOR.join ( dependencies ))
+			if domain not in unique_targets:
+				unique_targets.append ( domain )
+			else:
+				duplicate_error( domain )
+
 	print('# webhost targets')
 	for host in webhosts:
-		print('.PHONY: {webhost}'.format( webhost = host))
-		print('{webhost}: {list}'.format( webhost = host, list = SPACE.join(webhosts[host])))
-		print()
-	
+		print_target (host, SPACE.join(webhosts[host]))
+		if host not in unique_targets:
+			unique_targets.append ( host )
+		else:
+			duplicate_error( host )
+
 	print('# client targets')
 	for client in clients:
-		print('.PHONY: {cli}'.format( cli = client))
-		print('{cli}: {list}'.format( cli = client, list = SPACE.join(clients[client])))
-		print()
+		print_target (client, SPACE.join(clients[client]))
 	
 	print('# bdsl plugin targets')
-	print('.PHONY: bdsl')
-	print ('bdsl: {bdsl_websites}'.format( bdsl_websites = SPACE.join(bdsl_websites)))
-	print()
-	
+	print_target ('bdsl', SPACE.join(bdsl_websites))
+	if 'bdsl' not in unique_targets:
+		unique_targets.append ( 'bdsl' )
+	else:
+		duplicate_error( 'bdsl' )
+
 	print('# targets for all subdomains')
 	for subdomain in subdomains:
 		print('# target for {subdomain}'.format( subdomain = subdomain ))
-		print('.PHONY: {subdomain}'.format( subdomain = subdomain))
-		print('{subdomain}: {domains}'.format( subdomain = subdomain, domains = SPACE.join(subdomains[subdomain] )))
-		print()
+		print_target (subdomain, SPACE.join(subdomains[subdomain]))
+		if subdomain not in unique_targets:
+			unique_targets.append ( subdomain )
+		else:
+			duplicate_error( subdomain )
 
 	print('# all production domains')
-	print('.PHONY: prod')
-	print ('prod: {prod_domains}'.format( prod_domains = SPACE.join(prod_domains)))
-	print()
-	
+	print_target ('prod', SPACE.join(prod_domains))
+	if 'prod' not in unique_targets:
+		unique_targets.append ( 'prod' )
+	else:
+		duplicate_error( 'prod' )
+
 	print('# every site for every client')
 	# does everything for every client
-	print('.PHONY: all')
-	print('all: {clients}'.format(clients = SPACE.join(clients.keys())))
-	print()
+	print_target ('all', SPACE.join(clients.keys()))
+	if 'all' not in unique_targets:
+		unique_targets.append ( 'all' )
+	else:
+		duplicate_error( 'all' )
 
 if __name__ == "__main__":
 
