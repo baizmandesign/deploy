@@ -18,15 +18,15 @@ GIT_COMMAND := pull
 GIT_REMOTE := origin
 GIT_BRANCH := production
 # https://stackoverflow.com/questions/2004760/get-makefile-directory
-MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-EXCLUDE := ${MAKEFILE_DIR}excluded.txt
+MAKEFILE_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+EXCLUDE := ${MAKEFILE_DIR}/excluded.txt
 GENERATE_MAKE_TARGETS_PY := generate-make-targets.py
-TARGETS_FILE := targets.makefile
+TARGETS_FILE ?= targets.makefile
 TSV_FILENAME := websites.tsv
 
 # flywheel stuff
 LOCAL_PATH_PREFIX := ~/www
-FLYWHEEL_PATH := /www
+FLYWHEEL_PATH_PREFIX := /www
 
 WP_CONTENT_DIR := wp-content
 WP_PLUGINS_DIR := plugins
@@ -80,6 +80,7 @@ endef
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp cli subcommand ("theme" or "plugin")
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
+# note: this does not use wp cli aliases, but it could.
 define wp
 	@echo executing function \"$0\" for $(4)...
 	$(WP) --ssh=$(1) --path=$(2) $(3) $(WP_COMMAND) $(4)
@@ -95,7 +96,7 @@ define print_usage
 	@$(ECHO)
 	@$(ECHO) "websites:       $(TSV_FILENAME)"
 	@$(ECHO)
-	@$(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))$(TARGETS_FILE)"
+	@$(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))/$(TARGETS_FILE)"
 	@$(ECHO)
 	@$(ECHO) "local targets:  ./$(TARGETS_FILE)"
 	@$(ECHO)
@@ -112,10 +113,10 @@ usage:
 
 # https://stackoverflow.com/questions/2122602/force-makefile-to-execute-script-before-building-targets
 # runs every time make runs.
-$(shell python3 $(MAKEFILE_DIR)$(GENERATE_MAKE_TARGETS_PY) $(MAKEFILE_DIR)$(TSV_FILENAME)> $(MAKEFILE_DIR)$(TARGETS_FILE))
+$(shell python3 $(MAKEFILE_DIR)/$(GENERATE_MAKE_TARGETS_PY) $(MAKEFILE_DIR)/$(TSV_FILENAME)> $(MAKEFILE_DIR)/$(TARGETS_FILE))
 
 # include generated targets from external file
-include $(MAKEFILE_DIR)$(TARGETS_FILE)
+include $(MAKEFILE_DIR)/$(TARGETS_FILE)
 
 # include any other custom targets in the current directory
 # fail silently if not found
@@ -123,9 +124,9 @@ include $(MAKEFILE_DIR)$(TARGETS_FILE)
 
 .PHONY: get-targets
 get-targets:
-	@$(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$1}' | $(SORT)
+	@$(GREP) ':' $(MAKEFILE_DIR)/$(TARGETS_FILE) | $(AWK) -F':' '{print $$1}' | $(SORT)
 #	TODO: print prerequisites?
-#	@$(GREP) ':' $(MAKEFILE_DIR)$(TARGETS_FILE) | $(AWK) -F':' '{print $$2}' | $(SORT)
+#	@$(GREP) ':' $(MAKEFILE_DIR)/$(TARGETS_FILE) | $(AWK) -F':' '{print $$2}' | $(SORT)
 
 # use static pattern rule to substitute % for target name.
 # https://www.gnu.org/software/make/manual/make.html#Static-Pattern

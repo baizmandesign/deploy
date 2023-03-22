@@ -29,14 +29,14 @@ def usage ( ):
 
 def duplicate_error ( duplicate ):
 	"""print duplicate error and abort."""
-	print('"{duplicate}" is a duplicate target name. Aborting...'.format(duplicate = duplicate))
+	print(f'"{duplicate}" is a duplicate target name. Aborting...')
 	print()
 	sys.exit(1)
 
 def print_target ( target, prerequisites ):
 	"""print a single target."""
-	print('.PHONY: {target}'.format(target = target))
-	print('{target}: {prerequisites}'.format(target = target, prerequisites = prerequisites))
+	print(f'.PHONY: {target}')
+	print(f'{target}: {prerequisites}')
 	print()
 
 def print_targets ( website_list ):
@@ -120,7 +120,7 @@ def print_targets ( website_list ):
 				
 				if dependency_type == 'UNKNOWN':
 					print()
-					print('# Warning: "{dependency}" is neither a plugin nor theme. Aborting.'.format ( dependency = dependency ) )
+					print(f'# Warning: "{dependency}" is neither a plugin nor theme. Aborting.' )
 					print()
 					sys.exit(1)
 				if site['function'] == 'rsync':
