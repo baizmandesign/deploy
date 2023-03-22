@@ -113,6 +113,11 @@ def print_targets ( website_list ):
 				if dependency.endswith('-plugin') or dependency == BDSL_PLUGIN_PATH:
 					dependency_type = 'plugin'
 				
+				# force using 'wp' function for the bdsl plugin, which can now be updated via the wp dashboard (and will no longer contain the git repo and can no longer use the 'git' function)
+				previous_site_function = site['function']
+				if dependency == BDSL_PLUGIN_PATH:
+					site['function'] = 'wp'
+				
 				if dependency_type == 'UNKNOWN':
 					print()
 					print('# Warning: "{dependency}" is neither a plugin nor theme. Aborting.'.format ( dependency = dependency ) )
@@ -120,7 +125,7 @@ def print_targets ( website_list ):
 					sys.exit(1)
 				if site['function'] == 'rsync':
 					dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], site['subfolder'], dependency_type, dependency, site['function'] ] )
-				#if site['function'] == 'git':
+				# 'git' or 'wp'
 				else:
 					dependency_target = PART_SEPARATOR.join ( [ site['remote_host'], domain, dependency_type, dependency, site['function'] ] )
 					
@@ -129,12 +134,16 @@ def print_targets ( website_list ):
 				if dependency == BDSL_PLUGIN_PATH:
 					bdsl_websites.append ( dependency_target )
 						
+				# reset site function to previous value
+				site['function'] = previous_site_function
+
 			print_target (domain, DEPENDENCY_SEPARATOR.join ( dependencies ))
 			if domain not in unique_targets:
 				unique_targets.append ( domain )
 			else:
 				duplicate_error( domain )
-
+					
+	
 	print('# webhost targets')
 	for host in webhosts:
 		print_target (host, SPACE.join(webhosts[host]))
