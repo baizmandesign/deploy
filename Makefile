@@ -2,6 +2,7 @@
 # it requires ssh public-key authentication on the ssh remote hosts.
 # add new websites in generate-make-targets.py
 
+# FIXME: a path is added to the "wp" command for flywheel sites, which shouldn't have one.
 
 SHELL := /bin/sh
 SSH := /usr/bin/ssh
@@ -41,13 +42,8 @@ WP_THEMES_DIR := themes
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 # FIXME: I changed the order of arguments, but not the function calls.
-# NOTE: this is deprecated, since the other function works for older and newer versions of git.
-##define remote_git
-##	@echo executing function \"$0\" for $(4)...
-##	$(SSH) $(1) $(REMOTE_GIT) $(REMOTE_GIT_ARG) $(2)/$(WP_CONTENT_DIR)/$(3)/$(4) $(GIT_COMMAND) $(GIT_REMOTE) $(GIT_BRANCH)
-##	@echo
-##endef
-
+# NOTE: this is deprecated, since git_cd works for older and newer versions of git.
+remote_git = $(SSH) $(1) $(REMOTE_GIT) $(REMOTE_GIT_ARG) $(2)/$(WP_CONTENT_DIR)/$(3)/$(4) $(GIT_COMMAND) $(GIT_REMOTE) $(GIT_BRANCH)
 
 # $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = subdirectory on the remote server (usually domain.org)
@@ -57,11 +53,7 @@ WP_THEMES_DIR := themes
 # $6 = git branch
 # for git where we have to cd into a local directory.
 # FIXME: check return value of SSH command.
-define git_cd
-	@echo executing function \"$0\" for $(4)...
-	$(SSH) $(1) cd $(2)/$(WP_CONTENT_DIR)/$(3)s/$(4) \&\& $(REMOTE_GIT) $(GIT_COMMAND) $(5) $(6)
-	@echo
-endef
+git_cd = $(SSH) $(1) cd $(2)/$(WP_CONTENT_DIR)/$(3)s/$(4) \&\& $(REMOTE_GIT) $(GIT_COMMAND) $(5) $(6)
 
 # $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = local subdirectory (~/www/domain.test)
@@ -70,22 +62,14 @@ endef
 # for rsync (where we can't use git, for whatever reason).
 # these commands are not in a shell loop and don't need "special" treatment.
 # FIXME: check if local subfolder exists.
-define rsync
-	@echo executing function \"$0\" for $(4)...
-	$(RSYNC) -a --exclude-from=$(EXCLUDE) --verbose --progress --rsh=ssh $(LOCAL_PATH_PREFIX)/$(2)/$(WP_CONTENT_DIR)/$(3)s/$(4)/ $(1):$(FLYWHEEL_PATH)/$(WP_CONTENT_DIR)/$(3)s/$(4)/
-	@echo
-endef
+rsync = $(RSYNC) -a --exclude-from=$(EXCLUDE) --verbose --progress --rsh=ssh $(LOCAL_PATH_PREFIX)/$(2)/$(WP_CONTENT_DIR)/$(3)s/$(4)/ $(1):$(FLYWHEEL_PATH)/$(WP_CONTENT_DIR)/$(3)s/$(4)/
 
 # $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp cli subcommand ("theme" or "plugin")
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 # note: this does not use wp cli aliases, but it could.
-define wp
-	@echo executing function \"$0\" for $(4)...
-	$(WP) --ssh=$(1) --path=$(2) $(3) $(WP_COMMAND) $(4)
-	@echo
-endef
+wp = $(WP) --ssh=$(1) --path=$(2) $(3) $(WP_COMMAND) $(4)
 
 # usage function. print help text.
 define print_usage
