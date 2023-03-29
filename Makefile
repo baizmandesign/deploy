@@ -71,41 +71,22 @@ rsync = $(RSYNC) -a --exclude-from=$(EXCLUDE) --verbose --progress --rsh=ssh $(L
 # note: this does not use wp cli aliases, but it could.
 wp = $(WP) --ssh=$(1) --path=$(2) $(3) $(WP_COMMAND) $(4)
 
-# usage function. print help text.
-define print_usage
-	@$(ECHO) usage: make \<client_code\>
-	@$(ECHO) usage: make \<website\>
-	@$(ECHO) usage: make bdsl
-	@$(ECHO) usage: make get-targets
-	@$(ECHO)
-	@$(ECHO) "websites:       $(TSV_FILENAME)"
-	@$(ECHO)
-	@$(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))/$(TARGETS_FILE)"
-	@$(ECHO)
-	@$(ECHO) "local targets:  ./$(TARGETS_FILE)"
-	@$(ECHO)
-endef
-
-
-# default target. the first one in a Makefile is executed when no target is specified.
-.PHONY: usage
-usage:
-	@$(ECHO) 
-	@$(ECHO) No target specified.
-	@$(ECHO) 
-	$(call print_usage)
+# default target. the first target in a Makefile is usually executed when no target is specified, unless this variable is set.
+# https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
+.DEFAULT_GOAL := usage
 
 # https://stackoverflow.com/questions/2122602/force-makefile-to-execute-script-before-building-targets
-# runs every time make runs.
+# runs every time make runs. regenerates list of targets.
 $(shell python3 $(MAKEFILE_DIR)/$(GENERATE_MAKE_TARGETS_PY) $(MAKEFILE_DIR)/$(TSV_FILENAME)> $(MAKEFILE_DIR)/$(TARGETS_FILE))
 
-# include generated targets from external file
+# include generated targets from external file.
 include $(MAKEFILE_DIR)/$(TARGETS_FILE)
 
-# include any other custom targets in the current directory
-# fail silently if not found
+# include any other custom targets in the current directory.
+# fail silently if not found.
 -include ./$(TARGETS_FILE)
 
+# get list of targets (but not pre-requisites, which are also targets).
 .PHONY: get-targets
 get-targets:
 	@$(GREP) ':' $(MAKEFILE_DIR)/$(TARGETS_FILE) | $(GREP) -v 'PHONY' | $(AWK) -F':' '{print $$1}' | $(SORT)
@@ -116,9 +97,8 @@ get-targets:
 # https://www.gnu.org/software/make/manual/make.html#Static-Pattern
 # https://stackoverflow.com/questions/16262344/pass-a-target-name-to-dependency-list-in-makefile
 # note: only first % instance is substituted 
-# sowa.massart.edu: % : sowa/%/plugin/sowa.massart.edu-plugin//git sowa/%/theme/sowa.massart.edu-theme//git
 
-# catch all targets that end in "/git"
+# catch all targets that end in "/git".
 .PHONY: %/git
 %/git:
 	@echo
@@ -140,7 +120,7 @@ get-targets:
 	$(call git_cd,$(remote_host),${remote_subdirectory},$(asset_type),$(asset_path),$(GIT_REMOTE),$(GIT_BRANCH))
 
 
-# catch all targets that end in "/rsync"
+# catch all targets that end in "/rsync".
 .PHONY: %/rsync
 %/rsync:
 	@echo
@@ -161,7 +141,8 @@ get-targets:
 
 	$(call rsync,$(remote_host),$(local_subfolder),$(asset_type),$(asset_path))
 
-# catch all targets that end in "/wp"
+
+# catch all targets that end in "/wp".
 .PHONY: %/wp
 %/wp:
 	@echo
@@ -182,3 +163,20 @@ get-targets:
 
 	$(call wp,$(remote_host),$(local_subfolder),$(asset_type),$(asset_path))
 
+
+.PHONY: usage
+usage:
+	@$(ECHO) 
+	@$(ECHO) No target specified.
+	@$(ECHO) 
+	@$(ECHO) usage: make \<client_code\>
+	@$(ECHO) usage: make \<website\>
+	@$(ECHO) usage: make bdsl
+	@$(ECHO) usage: make get-targets
+	@$(ECHO)
+	@$(ECHO) "websites:       $(TSV_FILENAME)"
+	@$(ECHO)
+	@$(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))/$(TARGETS_FILE)"
+	@$(ECHO)
+	@$(ECHO) "local targets:  ./$(TARGETS_FILE)"
+	@$(ECHO)
