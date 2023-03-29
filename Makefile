@@ -108,7 +108,7 @@ include $(MAKEFILE_DIR)/$(TARGETS_FILE)
 
 .PHONY: get-targets
 get-targets:
-	@$(GREP) ':' $(MAKEFILE_DIR)/$(TARGETS_FILE) | $(AWK) -F':' '{print $$1}' | $(SORT)
+	@$(GREP) ':' $(MAKEFILE_DIR)/$(TARGETS_FILE) | $(GREP) -v 'PHONY' | $(AWK) -F':' '{print $$1}' | $(SORT)
 #	TODO: print prerequisites?
 #	@$(GREP) ':' $(MAKEFILE_DIR)/$(TARGETS_FILE) | $(AWK) -F':' '{print $$2}' | $(SORT)
 
