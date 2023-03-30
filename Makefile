@@ -41,9 +41,10 @@ WP_THEMES_DIR := themes
 # $2 = subdirectory on the remote server (usually domain.org)
 # $3 = wp-content subdirectory (themes/plugins). could be inferred from asset path in the future.
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
-# FIXME: I changed the order of arguments, but not the function calls.
-# NOTE: this is deprecated, since git_cd works for older and newer versions of git.
-remote_git = $(SSH) $(1) $(REMOTE_GIT) $(REMOTE_GIT_ARG) $(2)/$(WP_CONTENT_DIR)/$(3)/$(4) $(GIT_COMMAND) $(GIT_REMOTE) $(GIT_BRANCH)
+# $5 = git remote
+# $6 = git branch
+# NOTE: this is deprecated, since git_cd works for older versions of git that do not understand the -C argument.
+remote_git = $(SSH) $(1) $(REMOTE_GIT) $(REMOTE_GIT_ARG) $(2)/$(WP_CONTENT_DIR)/$(3)s/$(4) $(GIT_COMMAND) $(5) $(6)
 
 # $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = subdirectory on the remote server (usually domain.org)
@@ -51,8 +52,7 @@ remote_git = $(SSH) $(1) $(REMOTE_GIT) $(REMOTE_GIT_ARG) $(2)/$(WP_CONTENT_DIR)/
 # $4 = plugin or theme path (whatever.org-plugin or whatever.org-theme)
 # $5 = git remote
 # $6 = git branch
-# for git where we have to cd into a local directory.
-# FIXME: check return value of SSH command.
+# for an older version of git where we have to cd into a local directory because it does not understand the -C argument.
 git_cd = $(SSH) $(1) cd $(2)/$(WP_CONTENT_DIR)/$(3)s/$(4) \&\& $(REMOTE_GIT) $(GIT_COMMAND) $(5) $(6)
 
 # $1 = remote ssh host (often an alias defined in ~/.ssh/config)
