@@ -205,13 +205,16 @@ if __name__ == "__main__":
 		line_number = 0
 		websites = []
 		for line in websites_tsv:
+			line_number+=1
+			# is this line a comment?
+			if line['domain'][0] == '#':
+				continue
 			actual_field_count = len (line)
 			if actual_field_count != FIELD_COUNT:
 				print ("Line {line_number} contains {actual_field_count} fields and must have {field_count} fields.".format ( line_number = line_number, actual_field_count = actual_field_count, field_count = FIELD_COUNT ))
 				sys.exit(1)
-			#strip spaces from values
+			# strip spaces around values
 			line_stripped = { key: value.strip() for key, value in line.items() }		
 			websites.append (line_stripped)
-			line_number+=1
 	
 	print_targets (websites)
