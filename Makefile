@@ -1,6 +1,6 @@
-# this makefile is for deploying multiple projects across multiple clients' websites.
-# it requires ssh public-key authentication on the ssh remote hosts.
-# add new websites in generate-make-targets.py
+# this makefile is for deploying multiple projects across multiple websites.
+# see README.md for details.
+# add new websites in websites.tsv.
 
 # FIXME: a path is added to the "wp" command for flywheel sites, which shouldn't have one.
 
