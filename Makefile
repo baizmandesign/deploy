@@ -26,8 +26,8 @@ TARGETS_FILE ?= targets.makefile
 TSV_FILENAME := websites.tsv
 
 # flywheel stuff
-LOCAL_PATH_PREFIX := ~/www
-FLYWHEEL_PATH_PREFIX := /www
+RSYNC_LOCAL_PATH_PREFIX := ~/www
+RSYNC_REMOTE_PATH_PREFIX := /www
 
 WP_CONTENT_DIR := wp-content
 WP_PLUGINS_DIR := plugins
@@ -62,7 +62,7 @@ git_cd = $(SSH) $(1) cd $(2)/$(WP_CONTENT_DIR)/$(3)s/$(4) \&\& $(REMOTE_GIT) $(G
 # for rsync (where we can't use git, for whatever reason).
 # these commands are not in a shell loop and don't need "special" treatment.
 # FIXME: check if local subfolder exists.
-rsync = $(RSYNC) -a --exclude-from=$(EXCLUDE) --verbose --progress --rsh=ssh $(LOCAL_PATH_PREFIX)/$(2)/$(WP_CONTENT_DIR)/$(3)s/$(4)/ $(1):$(FLYWHEEL_PATH)/$(WP_CONTENT_DIR)/$(3)s/$(4)/
+rsync = $(RSYNC) -a --exclude-from=$(EXCLUDE) --verbose --progress --rsh=ssh $(RSYNC_LOCAL_PATH_PREFIX)/$(2)/$(WP_CONTENT_DIR)/$(3)s/$(4)/ $(1):$(RSYNC_REMOTE_PATH_PREFIX)/$(WP_CONTENT_DIR)/$(3)s/$(4)/
 
 # $1 = remote ssh host (often an alias defined in ~/.ssh/config)
 # $2 = subdirectory on the remote server (usually domain.org)

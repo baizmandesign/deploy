@@ -32,7 +32,7 @@ $ source ~/.zshrc
 
 ### configuration
 
-+ Check out the variables at the top of the `Makefile`. In particular, you may wish to edit `GIT_BRANCH` and `FLYWHEEL_PATH_PREFIX` (the remote folder path used for rsync).
++ Check out the variables at the top of the `Makefile`. In particular, you may wish to edit `GIT_BRANCH` (the default branch to pull), `RSYNC_LOCAL_PATH_PREFIX` (the local parent folder path used for rsync) and `RSYNC_REMOTE_PATH_PREFIX` (the remote parent folder path used for rsync).
 + Edit `excluded.txt` for path names and patterns that rsync should not copy to the remote server.
 
 ### populating the tsv file
@@ -44,7 +44,7 @@ Create a file named `websites.tsv` with the following fields separated by tabs:
 | whatever.org | ssh_alias | whatever.org | dev, staging | git | foo-plugin, bar-theme | what | dreamhost | bzmn |
 
 + Multiple subdomains and multiple dependencies are separated by commas.
-+ For rsync workflows, the "subfolder" column value is the local path relative to the `LOCAL_PATH_PREFIX` variable in the `Makefile`. The remote subfolder is assumed to be the `FLYWHEEL_PATH_PREFIX` as defined in the `Makefile`.
++ For rsync workflows, the "subfolder" column value is the local path relative to the `RSYNC_LOCAL_PATH_PREFIX` variable in the `Makefile`. The remote subfolder is assumed to be the `RSYNC_REMOTE_PATH_PREFIX` as defined in the `Makefile`.
 + Add a comment by prepending a "#" sign to the beginning of the line.
 
 **Tip:** I use a spreadsheet program to edit this file.
