@@ -174,7 +174,7 @@ usage:
 	@$(ECHO) usage: make bdsl
 	@$(ECHO) usage: make get-targets
 	@$(ECHO)
-	@$(ECHO) "websites:       $(TSV_FILENAME)"
+	@$(ECHO) "websites:       $(subst $(HOME),~,$(MAKEFILE_DIR))/$(TSV_FILENAME)"
 	@$(ECHO)
 	@$(ECHO) "all targets:    $(subst $(HOME),~,$(MAKEFILE_DIR))/$(TARGETS_FILE)"
 	@$(ECHO)
